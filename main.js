@@ -2,10 +2,21 @@ var roleUpgrader = require('role.upgrader');
 var roleHarvester = require('role.harvester');
 var roleBuilder = require('role.builder');
 var roleMechanic = require('role.mechanic');
+var roleTowerCharger = require('role.towerCharger');
 
 module.exports.loop = function () {
 
+    var tower = Game.getObjectById('6558cf5123a0d3353c7044a4');
+    if (tower.store.getFreeCapacity() < tower.store.getCapacity()) {
 
+        var closestDamagedRoad = tower.pos.findClosestByRange(STRUCTURE_ROAD, {
+            filter: (structure) => structure.hits < 5000
+        });
+
+        if (closestDamagedRoad) {
+            tower.repair(closestDamagedRoad);
+        }
+    }
 
     //log da energia disponível
     console.log('Energia disponível: ' + Game.rooms['W2N9'].energyAvailable);
@@ -33,12 +44,12 @@ module.exports.loop = function () {
 
     if (popOfHarvestersIsOk == true) {
         //auto renew creeps
-        /*for (var i in Game.creeps) {
+        for (var i in Game.creeps) {
             if (Game.creeps[i].ticksToLive < 50) {
                 Game.spawns['Spawn1'].renewCreep(Game.creeps[i])
                 console.log('Creep reformado: ' + Game.creeps[i].name + 'tempo de vida: ' + Game.creeps[i].ticksToLive)
             }
-        }*/
+        }
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         console.log('upgraders: ' + upgraders.length);
 
@@ -47,6 +58,24 @@ module.exports.loop = function () {
             console.log('Spawning new upgrader: ' + newName);
             Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName,
                 { memory: { role: 'upgrader' } });
+        }
+
+        if (Game.spawns['Spawn1'].spawning) {
+            var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
+            Game.spawns['Spawn1'].room.visual.text(
+                '🛠️' + spawningCreep.memory.role,
+                Game.spawns['Spawn1'].pos.x + 1,
+                Game.spawns['Spawn1'].pos.y,
+                { align: 'left', opacity: 0.8 });
+        }
+        var towerChargers = _.filter(Game.creeps, (creep) => creep.memory.role == 'towerCharger');
+        console.log('towerChargers: ' + towerChargers.length);
+
+        if (towerChargers.length < 1 && Game.rooms['W2N9'].energyAvailable >= 800) {
+            var newName = 'towerCharger' + Game.time;
+            console.log('Spawning new towerCharger: ' + newName);
+            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName,
+                { memory: { role: 'towerCharger' } });
         }
 
         if (Game.spawns['Spawn1'].spawning) {
@@ -141,6 +170,9 @@ module.exports.loop = function () {
         }
         if (creep.memory.role == 'mechanic') {
             roleMechanic.run(creep);
+        }
+        if (creep.memory.role == 'towerCharger') {
+            roleTowerCharger.run(creep);
         }
     }
 }
