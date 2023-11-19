@@ -4,9 +4,11 @@ var roleExplorer1 = {
     run: function (creep) {
 
         if (creep.memory.operacao == 'vazio') {
-            if (creep.room == Game.rooms['W2N8'] && creep.pos.y > 0) {
+            if (creep.room == Game.rooms['W8N2'] && creep.pos.y > 0) {
                 if (creep.store.getFreeCapacity() > 0) {
                     var sources = creep.room.find(FIND_SOURCES);
+
+
                     if (creep.memory.indoPara) {
                         if (sources[creep.memory.indoPara].energy > 0) {
                             if (creep.harvest(sources[creep.memory.indoPara]) == ERR_NOT_IN_RANGE) {
@@ -24,21 +26,16 @@ var roleExplorer1 = {
                             creep.memory.indoPara = 1
                             creep.moveTo(sources[1], { visualizePathStyle: { stroke: '#ffaa00' } })
                         }
-                    } else if (sources.length > 2 && sources[2].energy > 0) {
-                        if (creep.harvest(sources[2]) == ERR_NOT_IN_RANGE) {
-                            creep.memory.indoPara = 2
-                            creep.moveTo(sources[2], { visualizePathStyle: { stroke: '#ffaa00' } })
-                        }
                     }
                 } else if (creep.store.getFreeCapacity() == 0) {
                     creep.memory.operacao = 'carregado'
                     creep.memory.indoPara = undefined
                 }
-            } else if (creep.room != Game.rooms['W2N8'] || creep.pos.y <= 0) {
-                creep.moveTo(new RoomPosition(39, 4, 'W2N8'))
+            } else if (creep.room != Game.rooms['W8N2'] || creep.pos.y <= 0) {
+                creep.moveTo(new RoomPosition(25, 25, 'W8N2'))
             }
         } else if (creep.memory.operacao == 'carregado') {
-            if (creep.room == Game.rooms['W2N9'] && creep.pos.y < 49) {
+            if (creep.room == Game.rooms['W8N3'] && creep.pos.y < 49) {
                 var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_TOWER) &&
@@ -50,12 +47,12 @@ var roleExplorer1 = {
                         creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffffff' } });
                     }
                 } else if (targets.length == 0 && creep.store.getFreeCapacity() < creep.store.getCapacity()) {
-                    creep.moveTo(new RoomPosition(15, 21, 'W2N9'))
+                    creep.moveTo(new RoomPosition(15, 21, 'W8N3'))
                 } else if (creep.store.getFreeCapacity() == creep.store.getCapacity()) {
                     creep.memory.operacao = 'vazio'
                 }
-            } else if (creep.room != Game.rooms['W2N9'] || creep.pos.y >= 49) {
-                creep.moveTo(new RoomPosition(15, 21, 'W2N9'))
+            } else if (creep.room != Game.rooms['W8N3'] || creep.pos.y >= 49) {
+                creep.moveTo(new RoomPosition(15, 21, 'W8N3'))
             }
         }
     }

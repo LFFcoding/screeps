@@ -37,7 +37,7 @@ var roleDefender = {
             }
         }
         if (creep.memory.operacao == 'idle') {
-            creep.moveTo(new RoomPosition(25, 25, 'W8N3'))
+            creep.moveTo(new RoomPosition(46, 25, 'W8N2'))
         }
     }
 };
