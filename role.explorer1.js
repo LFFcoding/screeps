@@ -47,7 +47,7 @@ var roleExplorer1 = {
                         creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffffff' } });
                     }
                 } else if (targets.length == 0 && creep.store.getFreeCapacity() < creep.store.getCapacity()) {
-                    creep.moveTo(new RoomPosition(15, 21, 'W8N3'))
+                    creep.moveTo(new RoomPosition(27, 17, 'W8N3'))
                 } else if (creep.store.getFreeCapacity() == creep.store.getCapacity()) {
                     creep.memory.operacao = 'vazio'
                 }

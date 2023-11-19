@@ -42,10 +42,10 @@ module.exports.loop = function () {
     console.log('Harvesters: ' + harvesters.length);
 
     var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
-    if (defenders.length < 5 && Game.rooms['W8N3'].energyAvailable >= 550) {
+    if (defenders.length < 5 && Game.rooms['W8N3'].energyAvailable >= 790) {
         var newName = 'defender' + Game.time;
         console.log('Spawning new defender: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK], newName,
+        Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK], newName,
             {
                 memory: {
                     role: 'defender',
@@ -134,10 +134,12 @@ module.exports.loop = function () {
                     }
                 });
         }
-        var explorer2s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer2');
+
+        //verifica o explorers2 e spawna se precisar
+        /*var explorer2s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer2');
         console.log('explorer2s: ' + explorer2s.length);
 
-        /*if (explorer2s.length < 10 && Game.rooms['W8N3'].energyAvailable >= 800) {
+        if (explorer2s.length < 10 && Game.rooms['W8N3'].energyAvailable >= 800) {
             var newName = 'explorer2_' + Game.time;
             console.log('Spawning new explorer2: ' + newName);
             Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -154,7 +156,7 @@ module.exports.loop = function () {
     if (harvesters.length < 5 && Game.rooms['W8N3'].energyAvailable >= 800) {
         var newName = 'Harvester' + Game.time;
         console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], newName,
             {
                 memory: {
                     role: 'harvester',
