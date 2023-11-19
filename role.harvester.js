@@ -6,6 +6,8 @@ var roleHarvester = {
         if (creep.memory.operacao == 'vazio') {
             if (creep.store.getFreeCapacity() > 0) {
                 var sources = creep.room.find(FIND_SOURCES);
+
+
                 if (creep.memory.indoPara) {
                     if (sources[creep.memory.indoPara].energy > 0) {
                         if (creep.harvest(sources[creep.memory.indoPara]) == ERR_NOT_IN_RANGE) {
@@ -22,11 +24,6 @@ var roleHarvester = {
                     if (creep.harvest(sources[1]) == ERR_NOT_IN_RANGE) {
                         creep.memory.indoPara = 1
                         creep.moveTo(sources[1], { visualizePathStyle: { stroke: '#ffaa00' } })
-                    }
-                } else if (sources.length > 2 && sources[2].energy > 0) {
-                    if (creep.harvest(sources[2]) == ERR_NOT_IN_RANGE) {
-                        creep.memory.indoPara = 2
-                        creep.moveTo(sources[2], { visualizePathStyle: { stroke: '#ffaa00' } })
                     }
                 }
             } else if (creep.store.getFreeCapacity() == 0) {
@@ -45,7 +42,7 @@ var roleHarvester = {
                     creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffffff' } });
                 }
             } else if (targets.length == 0 && creep.store.getFreeCapacity() < creep.store.getCapacity()) {
-                creep.moveTo(new RoomPosition(15, 21, 'W2N9'))
+                creep.moveTo(new RoomPosition(16, 16, 'W8N3'))
             } else if (creep.store.getFreeCapacity() == creep.store.getCapacity()) {
                 creep.memory.operacao = 'vazio'
             }
