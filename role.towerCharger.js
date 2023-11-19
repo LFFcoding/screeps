@@ -21,7 +21,7 @@ var roleTowerCharger = {
                     creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffffff' } });
                 }
             } else if (targets.length == 0) {
-                creep.moveTo(15, 21, 'W2N9')
+                creep.moveTo(15, 21)
             }
         }
     }

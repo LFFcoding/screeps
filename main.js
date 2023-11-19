@@ -42,7 +42,7 @@ module.exports.loop = function () {
     console.log('Harvesters: ' + harvesters.length);
 
     var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
-    if (defenders.length < 5 && Game.rooms['W8N3'].energyAvailable >= 550) {
+    if (defenders.length < 2 && Game.rooms['W8N3'].energyAvailable >= 550) {
         var newName = 'defender' + Game.time;
         console.log('Spawning new defender: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH], newName,
@@ -78,7 +78,7 @@ module.exports.loop = function () {
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         console.log('upgraders: ' + upgraders.length);
 
-        if (upgraders.length < 10 && Game.rooms['W8N3'].energyAvailable >= 550) {
+        if (upgraders.length < 5 && Game.rooms['W8N3'].energyAvailable >= 550) {
             var newName = 'upgrader' + Game.time;
             console.log('Spawning new upgrader: ' + newName);
             Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], newName,
@@ -88,10 +88,10 @@ module.exports.loop = function () {
         var towerChargers = _.filter(Game.creeps, (creep) => creep.memory.role == 'towerCharger');
         console.log('towerChargers: ' + towerChargers.length);
 
-        if (towerChargers.length < 1 && Game.rooms['W8N3'].energyAvailable >= 800) {
+        if (towerChargers.length < 1 && Game.rooms['W8N3'].energyAvailable >= 400) {
             var newName = 'towerCharger' + Game.time;
             console.log('Spawning new towerCharger: ' + newName);
-            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName,
+            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
                 { memory: { role: 'towerCharger' } });
         }
 
@@ -106,10 +106,10 @@ module.exports.loop = function () {
                 console.log('builders: ' + builders.length)
             }
 
-            if (builders.length < 5 && Game.rooms['W8N3'].energyAvailable >= 400) {
+            if (builders.length < 5 && Game.rooms['W8N3'].energyAvailable >= 550) {
                 var newName = 'builder' + Game.time;
                 console.log('Spawning new builder: ' + newName);
-                Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
+                Game.spawns['Spawn1'].spawnCreep([WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], newName,
                     { memory: { role: 'builder' } });
             }
         } else if (constructions == 0) {
