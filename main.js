@@ -92,6 +92,35 @@ module.exports.loop = function () {
                 }
             }
         }
+
+        var explorer1s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer1');
+        console.log('explorer1s: ' + explorer1s.length);
+
+        if (explorer1s.length < 10 && Game.rooms['W2N9'].energyAvailable >= 800) {
+            var newName = 'explorer1_' + Game.time;
+            console.log('Spawning new explorer1: ' + newName);
+            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+                {
+                    memory: {
+                        role: 'explorer1',
+                        operacao: 'vazio'
+                    }
+                });
+        }
+        var explorer2s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer2');
+        console.log('explorer2s: ' + explorer2s.length);
+
+        if (explorer2s.length < 10 && Game.rooms['W2N9'].energyAvailable >= 800) {
+            var newName = 'explorer2_' + Game.time;
+            console.log('Spawning new explorer2: ' + newName);
+            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+                {
+                    memory: {
+                        role: 'explorer2',
+                        operacao: 'vazio'
+                    }
+                });
+        }
     }
 
     //spawn harvesters automaticamente
@@ -108,34 +137,7 @@ module.exports.loop = function () {
         );
     }
 
-    var explorer1s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer1');
-    console.log('explorer1s: ' + explorer1s.length);
 
-    if (explorer1s.length < 10 && Game.rooms['W2N9'].energyAvailable >= 800) {
-        var newName = 'explorer1_' + Game.time;
-        console.log('Spawning new explorer1: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-            {
-                memory: {
-                    role: 'explorer1',
-                    operacao: 'vazio'
-                }
-            });
-    }
-    var explorer2s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer2');
-    console.log('explorer2s: ' + explorer2s.length);
-
-    if (explorer2s.length < 10 && Game.rooms['W2N9'].energyAvailable >= 800) {
-        var newName = 'explorer2_' + Game.time;
-        console.log('Spawning new explorer2: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-            {
-                memory: {
-                    role: 'explorer2',
-                    operacao: 'vazio'
-                }
-            });
-    }
 
     //Spawn mostra qual unidade está spawnando
     if (Game.spawns['Spawn1'].spawning) {
