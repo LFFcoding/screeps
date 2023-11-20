@@ -15,9 +15,22 @@ module.exports.loop = function () {
     const MIN_DEFENDER = 2;
     const MIN_CARGO = 3;
     const MIN_HARVESTER = 2;
-    const MIN_UPGRADER = 5;
+    const MIN_UPGRADER = Memory.minUpgraders;
     const MIN_BUILDER = 2;
     const MIN_EXPLORER1 = 10;
+
+    var MAIN_STORAGE = Game.rooms['W8N3'].find(FIND_MY_STRUCTURES, {
+        filter: (structure) => {
+            return (structure.structureType == STRUCTURE_STORAGE);
+        }
+    });
+    var MAIN_STORAGE_ENERGY = MAIN_STORAGE[0].store.energy;
+    console.log('Energia armazenada: ' + MAIN_STORAGE_ENERGY);
+    if (MAIN_STORAGE_ENERGY > 100000) {
+        Memory.minUpgraders = 5
+    } else if (MAIN_STORAGE_ENERGY < 50000) {
+        Memory.minUpgraders = 3
+    }
 
     var cargos = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
     console.log('cargos: ' + cargos.length);
