@@ -2,6 +2,14 @@ var roleTowerCharger = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+
+        var TARGETS_FULL = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_STORAGE) &&
+                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+            }
+        });
+
         if (creep.store.getFreeCapacity() > 0) {
 
             // start FindSources
@@ -9,6 +17,10 @@ var roleTowerCharger = {
             if (target) {
                 if (creep.pickup(target) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(target);
+                }
+            } else {
+                if (creep.withdraw(TARGETS_FULL[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(TARGETS_FULL[0], { visualizePathStyle: { stroke: '#ffffff' } });
                 }
             }
             // end FindSources

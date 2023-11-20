@@ -13,7 +13,7 @@ module.exports.loop = function () {
     const MIN_TROOP = 0;
     const MIN_DEFENDER = 2;
     const MIN_CARGO = 3;
-    const MIN_HARVESTER = 3;
+    const MIN_HARVESTER = 2;
     const MIN_UPGRADER = 2;
     const MIN_BUILDER = 1;
     const MIN_EXPLORER1 = 15;
@@ -209,10 +209,10 @@ module.exports.loop = function () {
     }
 
     //spawn harvesters automaticamente
-    if (harvesters.length < MIN_HARVESTER && Game.rooms['W8N3'].energyAvailable >= 750) {
+    if (harvesters.length < MIN_HARVESTER && Game.rooms['W8N3'].energyAvailable >= 1250) {
         var newName = 'Harvester' + Game.time;
         console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], newName,
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], newName,
             {
                 memory: {
                     role: 'harvester',
@@ -222,10 +222,10 @@ module.exports.loop = function () {
         );
     }
 
-    if (cargos.length < MIN_CARGO && Game.rooms['W8N3'].energyAvailable >= 800) {
+    if (cargos.length < MIN_CARGO && Game.rooms['W8N3'].energyAvailable >= 1000) {
         var newName = 'cargo' + Game.time;
         console.log('Spawning new cargos: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
             {
                 memory: {
                     role: 'cargo',

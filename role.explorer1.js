@@ -38,7 +38,7 @@ var roleExplorer1 = {
             if (creep.room == Game.rooms['W8N3'] && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
                 var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_TOWER) &&
+                        return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
                             structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     }
                 });
@@ -49,7 +49,7 @@ var roleExplorer1 = {
                 } else if (targets.length == 0 && creep.store.getFreeCapacity() < creep.store.getCapacity()) {
                     var targets2 = creep.room.find(FIND_STRUCTURES, {
                         filter: (structure) => {
-                            return (structure.structureType == STRUCTURE_CONTAINER) &&
+                            return (structure.structureType == STRUCTURE_STORAGE) &&
                                 structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                         }
                     })
