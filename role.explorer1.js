@@ -7,11 +7,21 @@ var roleExplorer1 = {
                 return source.energy > 0;
             }
         });
+        var TOMBS_FULL = creep.room.find(FIND_TOMBSTONES, {
+            filter: (structure) => {
+                return (structure.store[RESOURCE_ENERGY] > 0);
+            }
+        });
 
         if (creep.memory.operacao == 'vazio') {
             if (creep.room == Game.rooms['W8N2'] && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
                 if (creep.store.getFreeCapacity() > 0) {
-                    if (SOURCES_FULL.length > 0) {
+                    if (TOMBS_FULL.length > 0) {
+                        console.log(creep.name + ': TOMBSTONE LOCALIZADA, INDO LIMPAR!')
+                        if (creep.withdraw(TOMBS_FULL[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(TOMBS_FULL[0], { visualizePathStyle: { stroke: '#ffffff' } });
+                        }
+                    } else if (SOURCES_FULL.length > 0) {
                         if (creep.harvest(SOURCES_FULL[0]) == ERR_NOT_IN_RANGE) {
                             creep.moveTo(SOURCES_FULL[0], { visualizePathStyle: { stroke: '#ffaa00' } })
                         }

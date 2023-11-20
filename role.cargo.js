@@ -28,7 +28,7 @@ var roleCargo = {
         if (creep.memory.operacao == 'vazio') {
             if (creep.store.getFreeCapacity() > 0) {
                 if (TOMBS_FULL.length > 0) {
-                    console.log('TOMBSTONE LOCALIZADA, INDO LIMPAR!')
+                    console.log(creep.name + ': TOMBSTONE LOCALIZADA, INDO LIMPAR!')
                     if (creep.withdraw(TOMBS_FULL[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(TOMBS_FULL[0], { visualizePathStyle: { stroke: '#ffffff' } });
                     }
