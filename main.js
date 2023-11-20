@@ -10,13 +10,13 @@ var roleMassAttackTroop = require('role.massAttackTroop');
 var roleCargo = require('role.cargo');
 
 module.exports.loop = function () {
-    const minTroop = 0;
-    const minDefender = 5;
-    const minCargo = 3;
-    const minHarvester = 3;
-    const minUpgrader = 5;
-    const minBuilder = 1;
-    const minExplorer1 = 15;
+    const MIN_TROOP = 0;
+    const MIN_DEFENDER = 2;
+    const MIN_CARGO = 3;
+    const MIN_HARVESTER = 3;
+    const MIN_UPGRADER = 2;
+    const MIN_BUILDER = 1;
+    const MIN_EXPLORER1 = 15;
 
     var cargos = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
     console.log('cargos: ' + cargos.length);
@@ -63,7 +63,7 @@ module.exports.loop = function () {
 
     var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
     console.log('Defenders: ' + defenders.length)
-    if (defenders.length < minDefender && Game.rooms['W8N3'].energyAvailable >= 790) {
+    if (defenders.length < MIN_DEFENDER && Game.rooms['W8N3'].energyAvailable >= 790) {
         var newName = 'defender' + Game.time;
         console.log('Spawning new defender: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK], newName,
@@ -80,28 +80,28 @@ module.exports.loop = function () {
 
     //Verifica se tem harvesters suficientes e ativa produção de builders e upgraders
     var popOfHarvestersIsOk
-    if (harvesters.length >= minHarvester) {
+    if (harvesters.length >= MIN_HARVESTER) {
         popOfHarvestersIsOk = true
         console.log('Harvesters pop is Ok.')
-    } else if (harvesters.length < minHarvester) {
+    } else if (harvesters.length < MIN_HARVESTER) {
         popOfHarvestersIsOk = false
         console.log('Harvesters pop is not OK!!!')
     };
 
     var popOfDefendersIsOk
-    if (defenders.length >= minDefender) {
+    if (defenders.length >= MIN_DEFENDER) {
         popOfDefendersIsOk = true
         console.log('Defenders pop is Ok.')
-    } else if (defenders.length < minDefender) {
+    } else if (defenders.length < MIN_DEFENDER) {
         popOfDefendersIsOk = false
         console.log('Defenders pop is not OK!!!')
     };
 
     var popOfCargoIsOk
-    if (cargos.length >= minCargo) {
+    if (cargos.length >= MIN_CARGO) {
         popOfCargoIsOk = true
         console.log('Cargos pop is Ok.')
-    } else if (cargos.length < minCargo) {
+    } else if (cargos.length < MIN_CARGO) {
         popOfCargoIsOk = false
         console.log('Cargos pop is not OK!!!')
     };
@@ -114,7 +114,7 @@ module.exports.loop = function () {
 
         //se houver menos idleTroopers que o necessário e houver energia suficiente para spawnar
         if (popOfDefendersIsOk == true) {
-            if (idleTroops.length < minTroop && Game.rooms['W8N3'].energyAvailable >= 800) {
+            if (idleTroops.length < MIN_TROOP && Game.rooms['W8N3'].energyAvailable >= 800) {
 
                 //spawne um idleTroop
                 var newName = 'Troop_' + Game.time;
@@ -134,7 +134,7 @@ module.exports.loop = function () {
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         console.log('upgraders: ' + upgraders.length);
 
-        if (upgraders.length < minUpgrader && Game.rooms['W8N3'].energyAvailable >= 800) {
+        if (upgraders.length < MIN_UPGRADER && Game.rooms['W8N3'].energyAvailable >= 800) {
             var newName = 'upgrader' + Game.time;
             console.log('Spawning new upgrader: ' + newName);
             Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName,
@@ -157,12 +157,12 @@ module.exports.loop = function () {
 
         if (constructions > 0) {
             var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-            if (builders.length < minBuilder) {
+            if (builders.length < MIN_BUILDER) {
                 console.log('Precisamos de mais construtores!')
                 console.log('builders: ' + builders.length)
             }
 
-            if (builders.length < minBuilder && Game.rooms['W8N3'].energyAvailable >= 800) {
+            if (builders.length < MIN_BUILDER && Game.rooms['W8N3'].energyAvailable >= 800) {
                 var newName = 'builder' + Game.time;
                 console.log('Spawning new builder: ' + newName);
                 Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], newName,
@@ -179,7 +179,7 @@ module.exports.loop = function () {
         var explorer1s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer1');
         console.log('explorer1s: ' + explorer1s.length);
 
-        if (explorer1s.length < minExplorer1 && Game.rooms['W8N3'].energyAvailable >= 800) {
+        if (explorer1s.length < MIN_EXPLORER1 && Game.rooms['W8N3'].energyAvailable >= 800) {
             var newName = 'explorer1_' + Game.time;
             console.log('Spawning new explorer1: ' + newName);
             Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -209,7 +209,7 @@ module.exports.loop = function () {
     }
 
     //spawn harvesters automaticamente
-    if (harvesters.length < minHarvester && Game.rooms['W8N3'].energyAvailable >= 750) {
+    if (harvesters.length < MIN_HARVESTER && Game.rooms['W8N3'].energyAvailable >= 750) {
         var newName = 'Harvester' + Game.time;
         console.log('Spawning new harvester: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], newName,
@@ -222,7 +222,7 @@ module.exports.loop = function () {
         );
     }
 
-    if (cargos.length < minCargo && Game.rooms['W8N3'].energyAvailable >= 800) {
+    if (cargos.length < MIN_CARGO && Game.rooms['W8N3'].energyAvailable >= 800) {
         var newName = 'cargo' + Game.time;
         console.log('Spawning new cargos: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -280,7 +280,7 @@ module.exports.loop = function () {
         if (creep.memory.role == 'idleTroop') {
             roleIdleTroop.run(creep);
         }
-        if (creep.memory.role == 'idleTroop' && (idleTroops.length >= minTroop)) {
+        if (creep.memory.role == 'idleTroop' && (idleTroops.length >= MIN_TROOP)) {
             creep.memory.role = 'massAttackTroop'
             roleMassAttackTroop.run(creep);
         }
