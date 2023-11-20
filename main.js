@@ -33,11 +33,9 @@ module.exports.loop = function () {
     }
 
     var cargos = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
-    console.log('cargos: ' + cargos.length);
 
     //verifique quantos idleTroops existem
     var idleTroops = _.filter(Game.creeps, (creep) => creep.memory.role == 'idleTroop');
-    console.log('idleTroops: ' + idleTroops.length);
 
 
     // start modulo das torres
@@ -80,10 +78,8 @@ module.exports.loop = function () {
 
     //verifica e loga quantos harvesters existem
     var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-    console.log('Harvesters: ' + harvesters.length);
 
     var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
-    console.log('Defenders: ' + defenders.length)
     if (defenders.length < MIN_DEFENDER && Game.rooms['W8N3'].energyAvailable >= 790) {
         var newName = 'defender' + Game.time;
         console.log('Spawning new defender: ' + newName);
@@ -178,7 +174,6 @@ module.exports.loop = function () {
             }
         }*/
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
-        console.log('upgraders: ' + upgraders.length);
 
         if (upgraders.length < MIN_UPGRADER && Game.rooms['W8N3'].energyAvailable >= 1250) {
             var newName = 'upgrader' + Game.time;
@@ -188,7 +183,6 @@ module.exports.loop = function () {
         }
 
         var towerChargers = _.filter(Game.creeps, (creep) => creep.memory.role == 'towerCharger');
-        console.log('towerChargers: ' + towerChargers.length);
 
         if (towerChargers.length < 1 && Game.rooms['W8N3'].energyAvailable >= 600) {
             var newName = 'towerCharger' + Game.time;
@@ -210,7 +204,6 @@ module.exports.loop = function () {
             var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
             if (builders.length < MIN_BUILDER) {
                 console.log('Precisamos de mais construtores!')
-                console.log('builders: ' + builders.length)
             }
 
             if (builders.length < MIN_BUILDER && Game.rooms['W8N3'].energyAvailable >= 1250) {
@@ -228,7 +221,6 @@ module.exports.loop = function () {
         }
 
         var explorer1s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer1');
-        console.log('explorer1s: ' + explorer1s.length);
 
         if (explorer1s.length < MIN_EXPLORER1 && Game.rooms['W8N3'].energyAvailable >= 1250) {
             var newName = 'explorer1_' + Game.time;
@@ -244,7 +236,6 @@ module.exports.loop = function () {
 
         //verifica o explorers2 e spawna se precisar
         /*var explorer2s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer2');
-        console.log('explorer2s: ' + explorer2s.length);
 
         if (explorer2s.length < 10 && Game.rooms['W8N3'].energyAvailable >= 800) {
             var newName = 'explorer2_' + Game.time;
