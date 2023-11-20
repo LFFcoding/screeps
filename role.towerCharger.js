@@ -3,11 +3,17 @@ var roleTowerCharger = {
     /** @param {Creep} creep **/
     run: function (creep) {
         if (creep.store.getFreeCapacity() > 0) {
-            var sources = creep.room.find(FIND_SOURCES);
-            const randomNumber = Math.floor(Math.random() * sources.length);
-            if (creep.harvest(sources[randomNumber]) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(sources[randomNumber], { visualizePathStyle: { stroke: '#ffaa00' } });
+
+            // start FindSources
+            const target = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+            if (target) {
+                if (creep.pickup(target) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(target);
+                }
             }
+            // end FindSources
+
+
         }
         else {
             var targets = creep.room.find(FIND_STRUCTURES, {

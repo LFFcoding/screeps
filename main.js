@@ -5,8 +5,21 @@ var roleTowerCharger = require('role.towerCharger');
 var roleExplorer1 = require('role.explorer1');
 var roleExplorer2 = require('role.explorer2');
 var roleDefender = require('role.defender');
+var roleIdleTroop = require('role.idleTroop');
+var roleMassAttackTroop = require('role.massAttackTroop');
+var roleCargo = require('role.cargo');
 
 module.exports.loop = function () {
+    const minTroop = 0;
+    const minDefender = 5;
+    const minCargo = 3;
+
+    var cargos = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
+    console.log('cargos: ' + cargos.length);
+
+    //verifique quantos idleTroops existem
+    var idleTroops = _.filter(Game.creeps, (creep) => creep.memory.role == 'idleTroop');
+    console.log('idleTroops: ' + idleTroops.length);
 
     var hostiles = Game.spawns['Spawn1'].room.find(FIND_CREEPS, {
         filter: (creepfinded) => {
@@ -18,13 +31,16 @@ module.exports.loop = function () {
     }
     //dawalishi122
 
-    /*var tower = Game.getObjectById('6558cf5123a0d3353c7044a4');
+    var tower = Game.getObjectById('655a63c33a5d413542c94aac');
     var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: (structure) => structure.hits < structure.hitsMax
     });
     if (closestDamagedStructure) {
         tower.repair(closestDamagedStructure)
-    }*/
+    }
+    if (hostiles.length > 0) {
+        tower.attack(hostiles[0])
+    }
 
 
     //log da energia disponível
@@ -42,7 +58,8 @@ module.exports.loop = function () {
     console.log('Harvesters: ' + harvesters.length);
 
     var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
-    if (defenders.length < 5 && Game.rooms['W8N3'].energyAvailable >= 790) {
+    console.log('Defenders: ' + defenders.length)
+    if (defenders.length < minDefender && Game.rooms['W8N3'].energyAvailable >= 790) {
         var newName = 'defender' + Game.time;
         console.log('Spawning new defender: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK], newName,
@@ -52,22 +69,57 @@ module.exports.loop = function () {
                     operacao: 'idle'
                 }
             }
-        );
-    }
+        )
+    };
 
 
 
     //Verifica se tem harvesters suficientes e ativa produção de builders e upgraders
     var popOfHarvestersIsOk
-    if (harvesters.length >= 5) {
+    if (harvesters.length >= 4) {
         popOfHarvestersIsOk = true
         console.log('Harvesters pop is Ok.')
-    } else if (harvesters.length < 5) {
+    } else if (harvesters.length < 4) {
         popOfHarvestersIsOk = false
         console.log('Harvesters pop is not OK!!!')
-    }
+    };
 
-    if (popOfHarvestersIsOk == true) {
+    var popOfDefendersIsOk
+    if (defenders.length >= minDefender) {
+        popOfDefendersIsOk = true
+        console.log('Defenders pop is Ok.')
+    } else if (defenders.length < minDefender) {
+        popOfDefendersIsOk = false
+        console.log('Defenders pop is not OK!!!')
+    };
+
+    var popOfCargoIsOk
+    if (cargos.length >= minCargo) {
+        popOfCargoIsOk = true
+        console.log('Cargos pop is Ok.')
+    } else if (cargos.length < minCargo) {
+        popOfCargoIsOk = false
+        console.log('Cargos pop is not OK!!!')
+    };
+
+
+
+
+
+    if (popOfHarvestersIsOk == true && popOfCargoIsOk == true) {
+
+        //se houver menos idleTroopers que o necessário e houver energia suficiente para spawnar
+        if (popOfDefendersIsOk == true) {
+            if (idleTroops.length < minTroop && Game.rooms['W8N3'].energyAvailable >= 800) {
+
+                //spawne um idleTroop
+                var newName = 'Troop_' + Game.time;
+                console.log('Spawning new Troop: ' + newName);
+                Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK], newName,
+                    { memory: { role: 'idleTroop' } });
+            }
+        }
+
         //auto renew creeps
         /*for (var i in Game.creeps) {
             if (Game.creeps[i].ticksToLive < 500) {
@@ -78,10 +130,10 @@ module.exports.loop = function () {
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         console.log('upgraders: ' + upgraders.length);
 
-        if (upgraders.length < 2 && Game.rooms['W8N3'].energyAvailable >= 800) {
+        if (upgraders.length < 5 && Game.rooms['W8N3'].energyAvailable >= 800) {
             var newName = 'upgrader' + Game.time;
             console.log('Spawning new upgrader: ' + newName);
-            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName,
                 { memory: { role: 'upgrader' } });
         }
 
@@ -109,7 +161,7 @@ module.exports.loop = function () {
             if (builders.length < 2 && Game.rooms['W8N3'].energyAvailable >= 800) {
                 var newName = 'builder' + Game.time;
                 console.log('Spawning new builder: ' + newName);
-                Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+                Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], newName,
                     { memory: { role: 'builder' } });
             }
         } else if (constructions == 0) {
@@ -153,13 +205,26 @@ module.exports.loop = function () {
     }
 
     //spawn harvesters automaticamente
-    if (harvesters.length < 5 && Game.rooms['W8N3'].energyAvailable >= 800) {
+    if (harvesters.length < 4 && Game.rooms['W8N3'].energyAvailable >= 750) {
         var newName = 'Harvester' + Game.time;
         console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], newName,
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], newName,
             {
                 memory: {
                     role: 'harvester',
+                    operacao: 'vazio'
+                }
+            }
+        );
+    }
+
+    if (cargos.length < minCargo && Game.rooms['W8N3'].energyAvailable >= 800) {
+        var newName = 'cargo' + Game.time;
+        console.log('Spawning new cargos: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+            {
+                memory: {
+                    role: 'cargo',
                     operacao: 'vazio'
                 }
             }
@@ -184,6 +249,9 @@ module.exports.loop = function () {
         if (creep.memory.role == 'harvester') {
             roleHarvester.run(creep);
         }
+        if (creep.memory.role == 'cargo') {
+            roleCargo.run(creep);
+        }
         if (creep.memory.role == 'builder') {
             roleBuilder.run(creep);
         }
@@ -204,6 +272,16 @@ module.exports.loop = function () {
         }
         if (creep.memory.role == 'defender') {
             roleDefender.run(creep);
+        }
+        if (creep.memory.role == 'idleTroop') {
+            roleIdleTroop.run(creep);
+        }
+        if (creep.memory.role == 'idleTroop' && (idleTroops.length >= minTroop)) {
+            creep.memory.role = 'massAttackTroop'
+            roleMassAttackTroop.run(creep);
+        }
+        if (creep.memory.role == 'massAttackTroop') {
+            roleMassAttackTroop.run(creep);
         }
     }
 }

@@ -4,7 +4,7 @@ var roleExplorer1 = {
     run: function (creep) {
 
         if (creep.memory.operacao == 'vazio') {
-            if (creep.room == Game.rooms['W8N2'] && creep.pos.y > 0) {
+            if (creep.room == Game.rooms['W8N2'] && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
                 if (creep.store.getFreeCapacity() > 0) {
                     var sources = creep.room.find(FIND_SOURCES);
 
@@ -35,7 +35,7 @@ var roleExplorer1 = {
                 creep.moveTo(new RoomPosition(25, 25, 'W8N2'))
             }
         } else if (creep.memory.operacao == 'carregado') {
-            if (creep.room == Game.rooms['W8N3'] && creep.pos.y < 49) {
+            if (creep.room == Game.rooms['W8N3'] && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
                 var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType == STRUCTURE_TOWER) &&
@@ -47,7 +47,15 @@ var roleExplorer1 = {
                         creep.moveTo(targets[0], { visualizePathStyle: { stroke: '#ffffff' } });
                     }
                 } else if (targets.length == 0 && creep.store.getFreeCapacity() < creep.store.getCapacity()) {
-                    creep.moveTo(new RoomPosition(27, 17, 'W8N3'))
+                    var targets2 = creep.room.find(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return (structure.structureType == STRUCTURE_CONTAINER) &&
+                                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                        }
+                    })
+                    if (creep.transfer(targets2[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targets2[0], { visualizePathStyle: { stroke: '#ffffff' } });
+                    }
                 } else if (creep.store.getFreeCapacity() == creep.store.getCapacity()) {
                     creep.memory.operacao = 'vazio'
                 }
