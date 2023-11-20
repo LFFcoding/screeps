@@ -13,6 +13,10 @@ module.exports.loop = function () {
     const minTroop = 0;
     const minDefender = 5;
     const minCargo = 3;
+    const minHarvester = 3;
+    const minUpgrader = 5;
+    const minBuilder = 1;
+    const minExplorer1 = 15;
 
     var cargos = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
     console.log('cargos: ' + cargos.length);
@@ -76,10 +80,10 @@ module.exports.loop = function () {
 
     //Verifica se tem harvesters suficientes e ativa produção de builders e upgraders
     var popOfHarvestersIsOk
-    if (harvesters.length >= 4) {
+    if (harvesters.length >= minHarvester) {
         popOfHarvestersIsOk = true
         console.log('Harvesters pop is Ok.')
-    } else if (harvesters.length < 4) {
+    } else if (harvesters.length < minHarvester) {
         popOfHarvestersIsOk = false
         console.log('Harvesters pop is not OK!!!')
     };
@@ -130,7 +134,7 @@ module.exports.loop = function () {
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
         console.log('upgraders: ' + upgraders.length);
 
-        if (upgraders.length < 5 && Game.rooms['W8N3'].energyAvailable >= 800) {
+        if (upgraders.length < minUpgrader && Game.rooms['W8N3'].energyAvailable >= 800) {
             var newName = 'upgrader' + Game.time;
             console.log('Spawning new upgrader: ' + newName);
             Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName,
@@ -153,12 +157,12 @@ module.exports.loop = function () {
 
         if (constructions > 0) {
             var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-            if (builders.length < 2) {
+            if (builders.length < minBuilder) {
                 console.log('Precisamos de mais construtores!')
                 console.log('builders: ' + builders.length)
             }
 
-            if (builders.length < 2 && Game.rooms['W8N3'].energyAvailable >= 800) {
+            if (builders.length < minBuilder && Game.rooms['W8N3'].energyAvailable >= 800) {
                 var newName = 'builder' + Game.time;
                 console.log('Spawning new builder: ' + newName);
                 Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], newName,
@@ -175,7 +179,7 @@ module.exports.loop = function () {
         var explorer1s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer1');
         console.log('explorer1s: ' + explorer1s.length);
 
-        if (explorer1s.length < 10 && Game.rooms['W8N3'].energyAvailable >= 800) {
+        if (explorer1s.length < minExplorer1 && Game.rooms['W8N3'].energyAvailable >= 800) {
             var newName = 'explorer1_' + Game.time;
             console.log('Spawning new explorer1: ' + newName);
             Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -205,7 +209,7 @@ module.exports.loop = function () {
     }
 
     //spawn harvesters automaticamente
-    if (harvesters.length < 4 && Game.rooms['W8N3'].energyAvailable >= 750) {
+    if (harvesters.length < minHarvester && Game.rooms['W8N3'].energyAvailable >= 750) {
         var newName = 'Harvester' + Game.time;
         console.log('Spawning new harvester: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], newName,
