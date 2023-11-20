@@ -15,7 +15,7 @@ module.exports.loop = function () {
     const MIN_DEFENDER = 2;
     const MIN_CARGO = 3;
     const MIN_HARVESTER = 2;
-    const MIN_UPGRADER = 5;
+    const MIN_UPGRADER = 2;
     const MIN_BUILDER = 2;
     const MIN_EXPLORER1 = 10;
 
@@ -26,27 +26,34 @@ module.exports.loop = function () {
     var idleTroops = _.filter(Game.creeps, (creep) => creep.memory.role == 'idleTroop');
     console.log('idleTroops: ' + idleTroops.length);
 
+
+    // start modulo das torres
     var hostiles = Game.spawns['Spawn1'].room.find(FIND_CREEPS, {
         filter: (creepfinded) => {
             return (creepfinded.owner.username == 'dawalishi122')
         }
     })
-    if (hostiles.length > 0) {
-        console.log(hostiles[0].owner.username)
-    }
     //dawalishi122
 
-    var tower = Game.getObjectById('655a63c33a5d413542c94aac');
-    var closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+    var towers = Game.rooms['W8N3'].find(FIND_STRUCTURES, {
+        filter: (structure) => {
+            return (structure.structureType == STRUCTURE_TOWER)
+        }
+    });
+    var closestDamagedStructure = towers[0].pos.findClosestByRange(FIND_STRUCTURES, {
         filter: (structure) => structure.hits < structure.hitsMax
     });
     if (closestDamagedStructure) {
-        tower.repair(closestDamagedStructure)
+        for (var i in towers) {
+            towers[i].repair(closestDamagedStructure)
+        }
     }
     if (hostiles.length > 0) {
-        tower.attack(hostiles[0])
+        for (var i in towers) {
+            towers[i].attack(hostiles[0])
+        }
     }
-
+    // end modulo das torres
 
     //log da energia disponível
     console.log('Energia disponível: ' + Game.rooms['W8N3'].energyAvailable);
@@ -76,8 +83,6 @@ module.exports.loop = function () {
             }
         )
     };
-
-
 
     //Verifica se tem harvesters suficientes e ativa produção de builders e upgraders
     var popOfHarvestersIsOk
@@ -115,13 +120,40 @@ module.exports.loop = function () {
 
         //se houver menos idleTroopers que o necessário e houver energia suficiente para spawnar
         if (popOfDefendersIsOk == true) {
-            if (idleTroops.length < MIN_TROOP && Game.rooms['W8N3'].energyAvailable >= 1300) {
+            if (idleTroops.length < MIN_TROOP) {
+                //verifique quantos idleTroopsSoldier existem
+                var soldiers = _.filter(Game.creeps, (creep) => (creep.memory.role == 'idleTroop' && creep.memory.class == 'soldier'));
+                if (soldiers.length < 1 && Game.rooms['W8N3'].energyAvailable >= 1300) {
 
-                //spawne um idleTroop
-                var newName = 'Troop_' + Game.time;
-                console.log('Spawning new Troop: ' + newName);
-                Game.spawns['Spawn1'].spawnCreep([TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, MOVE, ATTACK], newName,
-                    { memory: { role: 'idleTroop' } });
+                    //spawne um idleTroop
+                    var newName = 'Troop_Soldier_' + Game.time;
+                    console.log('Spawning new Troop: ' + newName);
+                    Game.spawns['Spawn1'].spawnCreep([TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, MOVE, ATTACK], newName,
+                        {
+                            memory: {
+                                role: 'idleTroop',
+                                class: 'soldier'
+                            }
+                        });
+                }
+
+                //verifique se os soldiers estão prontos e faça os healers
+                if (soldiers.length == 1) {
+                    var healers = _.filter(Game.creeps, (creep) => (creep.memory.role == 'idleTroop' && creep.memory.class == 'healer'));
+                    if (healers.length < 3 && Game.rooms['W8N3'].energyAvailable >= 930) {
+
+                        //spawne um idleTroop
+                        var newName = 'Troop_Healer_' + Game.time;
+                        console.log('Spawning new Troop: ' + newName);
+                        Game.spawns['Spawn1'].spawnCreep([TOUGH, HEAL, MOVE, TOUGH, HEAL, MOVE, TOUGH, HEAL, MOVE], newName,
+                            {
+                                memory: {
+                                    role: 'idleTroop',
+                                    class: 'healer'
+                                }
+                            });
+                    }
+                }
             }
         }
 
