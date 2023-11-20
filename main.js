@@ -15,7 +15,7 @@ module.exports.loop = function () {
     const MIN_DEFENDER = 2;
     const MIN_CARGO = 3;
     const MIN_HARVESTER = 2;
-    const MIN_UPGRADER = 2;
+    const MIN_UPGRADER = 5;
     const MIN_BUILDER = 2;
     const MIN_EXPLORER1 = 10;
 
@@ -181,7 +181,12 @@ module.exports.loop = function () {
             var newName = 'towerCharger' + Game.time;
             console.log('Spawning new towerCharger: ' + newName);
             Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-                { memory: { role: 'towerCharger' } });
+                {
+                    memory: {
+                        role: 'towerCharger',
+                        operacao: 'vazio'
+                    }
+                });
         }
 
         for (var creep in Game.creeps) {
