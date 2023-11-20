@@ -21,12 +21,12 @@ var roleCargo = {
 
         if (creep.memory.operacao == 'vazio') {
             if (creep.store.getFreeCapacity() > 0) {
-                var target = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
-                if (target) {
-                    if (creep.pickup(target) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(target);
+                var target = creep.room.find(FIND_DROPPED_RESOURCES);
+                if (target.length > 0) {
+                    if (creep.pickup(target[0]) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(target[0]);
                     }
-                } else if ((TARGETS_FREE > 0 && STORAGES_FULL.length > 0) && !target) {
+                } else if ((TARGETS_FREE.length > 0 && STORAGES_FULL.length > 0) && target.length == 0) {
                     if (creep.store.getFreeCapacity() > 0) {
                         if (creep.withdraw(STORAGES_FULL[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                             creep.moveTo(STORAGES_FULL[0], { visualizePathStyle: { stroke: '#ffffff' } });
