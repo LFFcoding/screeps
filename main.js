@@ -16,7 +16,7 @@ module.exports.loop = function () {
     const MIN_CARGO = 3;
     const MIN_HARVESTER = 2;
     const MIN_UPGRADER = 5;
-    const MIN_BUILDER = 1;
+    const MIN_BUILDER = 2;
     const MIN_EXPLORER1 = 10;
 
     var cargos = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
