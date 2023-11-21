@@ -211,14 +211,25 @@ module.exports.loop = function () {
             console.log(Game.rooms[room].name)
         }
 
+
         var constructions = new Array();
         if (controllers.length > 0) {
             for (var controller in controllers) {
-                constructions.push(controllers[controller].room.find(FIND_MY_CONSTRUCTION_SITES))
+                var finded_cs = controllers[controller].room.find(FIND_MY_CONSTRUCTION_SITES)
+
+                if (finded_cs.length > 0) {
+                    console.log('NOVO construction: ' + finded_cs.id)
+                    if (constructions) {
+                        constructions.push(finded_cs)
+                    } else {
+                        constructions.push(finded_cs)
+                    }
+                }
             }
         }
 
         if (constructions.length > 0) {
+            console.log('CONSTRUÇÃO: ' + constructions)
 
             console.log('Construction site: ' + constructions[0])
             var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
@@ -299,7 +310,7 @@ module.exports.loop = function () {
 
     var upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader2');
 
-    if (upgraders2.length < 2 && ROOM_ALVO.energyAvailable >= 250) {
+    if (upgraders2.length < 2 && ROOM_ALVO.energyAvailable >= 300) {
         var newName = 'upgrader2_' + Game.time;
         console.log('Spawning new upgrader2: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, CARRY, MOVE, MOVE], newName,
@@ -317,7 +328,7 @@ module.exports.loop = function () {
     }
 
     if (Game.spawns['Spawn2'].spawning) {
-        var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
+        var spawningCreep = Game.creeps[Game.spawns['Spawn2'].spawning.name];
         Game.spawns['Spawn2'].room.visual.text(
             '🛠️' + spawningCreep.memory.role,
             Game.spawns['Spawn2'].pos.x + 1,
