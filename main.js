@@ -310,11 +310,16 @@ module.exports.loop = function () {
 
     var upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader2');
 
-    if (upgraders2.length < 2 && ROOM_ALVO.energyAvailable >= 300) {
+    if (upgraders2.length < 2 && ROOM_ALVO.energyAvailable >= 250) {
         var newName = 'upgrader2_' + Game.time;
         console.log('Spawning new upgrader2: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, CARRY, MOVE, MOVE], newName,
-            { memory: { role: 'upgrader2' } });
+            {
+                memory: {
+                    role: 'upgrader2',
+                    roomWork: ROOM_ALVO
+                }
+            });
     }
 
     //Spawn mostra qual unidade está spawnando
@@ -382,6 +387,7 @@ module.exports.loop = function () {
             roleClaimer.run(creep);
         }
         if (creep.memory.role == 'upgrader2') {
+            creep.memory.roomWork = ROOM_ALVO
             roleUpgrader2.run(creep);
         }
 
