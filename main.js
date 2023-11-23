@@ -10,9 +10,10 @@ var roleIdleTroop = require('role.idleTroop');
 var roleMassAttackTroop = require('role.massAttackTroop');
 var roleCargo = require('role.cargo');
 var roleClaimer = require('role.claimer');
+var towerBrain = require('towerBrain');
 
 module.exports.loop = function () {
-    console.log('############################################################################################')
+
     const MAIN_ROOM = Game.rooms['W8N3']
     const ROOM_ALVO = Game.rooms['W8N2']
     const MIN_TROOP = 0;
@@ -23,6 +24,9 @@ module.exports.loop = function () {
     const MIN_BUILDER = 2;
     const MIN_EXPLORER1 = 10;
     const MIN_CLAIMER = 0;
+
+    console.log('############################################################################################')
+
 
     var MAIN_STORAGE = MAIN_ROOM.find(FIND_MY_STRUCTURES, {
         filter: (structure) => {
@@ -43,29 +47,8 @@ module.exports.loop = function () {
     var idleTroops = _.filter(Game.creeps, (creep) => creep.memory.role == 'idleTroop');
 
     // start modulo das torres
-    var hostiles = Game.spawns['Spawn1'].room.find(FIND_CREEPS, {
-        filter: (creepfinded) => {
-            return (creepfinded.owner.username == 'dawalishi122')
-        }
-    })
-    var towers = MAIN_ROOM.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return (structure.structureType == STRUCTURE_TOWER)
-        }
-    });
-    var closestDamagedStructure = towers[0].pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: (structure) => structure.hits < structure.hitsMax
-    });
-    if (closestDamagedStructure) {
-        for (var i in towers) {
-            towers[i].repair(closestDamagedStructure)
-        }
-    }
-    if (hostiles.length > 0) {
-        for (var i in towers) {
-            towers[i].attack(hostiles[0])
-        }
-    }
+    towerBrain.run(MAIN_ROOM);
+    towerBrain.run(ROOM_ALVO);
     // end modulo das torres
 
     for (var i in Memory.creeps) {
@@ -310,10 +293,10 @@ module.exports.loop = function () {
 
     var upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader2');
 
-    if (upgraders2.length < 2 && ROOM_ALVO.energyAvailable >= 250) {
+    if (upgraders2.length < 4 && ROOM_ALVO.energyAvailable >= 300) {
         var newName = 'upgrader2_' + Game.time;
         console.log('Spawning new upgrader2: ' + newName);
-        Game.spawns['Spawn2'].spawnCreep([WORK, CARRY, MOVE, MOVE], newName,
+        Game.spawns['Spawn2'].spawnCreep([WORK, CARRY, MOVE, MOVE, MOVE], newName,
             {
                 memory: {
                     role: 'upgrader2',
