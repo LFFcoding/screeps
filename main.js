@@ -3,6 +3,7 @@ var roleUpgrader2 = require('role.upgrader2');
 var roleHarvester = require('role.harvester');
 var roleBuilder = require('role.builder');
 var roleTowerCharger = require('role.towerCharger');
+var roleTowerCharger2 = require('role.towerCharger2');
 var roleExplorer1 = require('role.explorer1');
 var roleExplorer2 = require('role.explorer2');
 var roleDefender = require('role.defender');
@@ -17,13 +18,14 @@ module.exports.loop = function () {
     const MAIN_ROOM = Game.rooms['W8N3']
     const ROOM_ALVO = Game.rooms['W8N2']
     const MIN_TROOP = 0;
-    const MIN_DEFENDER = 2;
+    const MIN_DEFENDER = 1;
     const MIN_CARGO = 3;
     const MIN_HARVESTER = 2;
     const MIN_UPGRADER = Memory.minUpgraders;
-    const MIN_BUILDER = 2;
+    const MIN_BUILDER = 5;
     const MIN_EXPLORER1 = 10;
     const MIN_CLAIMER = 0;
+    const MIN_TOWERCHARGER = 1;
 
     console.log('############################################################################################')
 
@@ -36,9 +38,9 @@ module.exports.loop = function () {
     var MAIN_STORAGE_ENERGY = MAIN_STORAGE[0].store.energy;
     console.log('Energia armazenada: ' + MAIN_STORAGE_ENERGY);
     if (MAIN_STORAGE_ENERGY > 100000) {
-        Memory.minUpgraders = 5
-    } else if (MAIN_STORAGE_ENERGY < 50000) {
         Memory.minUpgraders = 3
+    } else if (MAIN_STORAGE_ENERGY < 50000) {
+        Memory.minUpgraders = 1
     }
 
     var cargos = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
@@ -174,16 +176,34 @@ module.exports.loop = function () {
                 { memory: { role: 'upgrader' } });
         }
 
-        var towerChargers = _.filter(Game.creeps, (creep) => creep.memory.role == 'towerCharger');
+        var towerChargers1 = _.filter(Game.creeps, (creep) => (creep.memory.role == 'towerCharger'));
 
-        if (towerChargers.length < 1 && MAIN_ROOM.energyAvailable >= 600) {
-            var newName = 'towerCharger' + Game.time;
-            console.log('Spawning new towerCharger: ' + newName);
+        if (towerChargers1.length < MIN_TOWERCHARGER && MAIN_ROOM.energyAvailable >= 600) {
+            var newName = 'towerCharger1_' + Game.time;
+            console.log('Spawning new towerCharger1_: ' + newName);
             Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
                 {
                     memory: {
                         role: 'towerCharger',
-                        operacao: 'vazio'
+                        operacao: 'vazio',
+                        roomFonte: MAIN_ROOM,
+                        roomWork: MAIN_ROOM
+                    }
+                });
+        }
+
+        var towerChargers2 = _.filter(Game.creeps, (creep) => (creep.memory.role == 'towerCharger2'));
+
+        if (towerChargers2.length < MIN_TOWERCHARGER && MAIN_ROOM.energyAvailable >= 600) {
+            var newName = 'towerCharger2_' + Game.time;
+            console.log('Spawning new towerCharger2_: ' + newName);
+            Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+                {
+                    memory: {
+                        role: 'towerCharger2',
+                        operacao: 'vazio',
+                        roomFonte: MAIN_ROOM,
+                        roomWork: ROOM_ALVO
                     }
                 });
         }
@@ -193,15 +213,12 @@ module.exports.loop = function () {
             controllers.push(Game.rooms[room].controller)
             console.log(Game.rooms[room].name)
         }
-
-
+        Memory.controllers = controllers
         var constructions = new Array();
         if (controllers.length > 0) {
             for (var controller in controllers) {
                 var finded_cs = controllers[controller].room.find(FIND_MY_CONSTRUCTION_SITES)
-
                 if (finded_cs.length > 0) {
-                    console.log('NOVO construction: ' + finded_cs.id)
                     if (constructions) {
                         constructions.push(finded_cs)
                     } else {
@@ -212,13 +229,7 @@ module.exports.loop = function () {
         }
 
         if (constructions.length > 0) {
-            console.log('CONSTRUÇÃO: ' + constructions)
-
-            console.log('Construction site: ' + constructions[0])
             var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-            if (builders.length < MIN_BUILDER) {
-                console.log('Precisamos de mais construtores!')
-            }
 
             if (builders.length < MIN_BUILDER && MAIN_ROOM.energyAvailable >= 1250) {
                 var newName = 'builder' + Game.time;
@@ -346,6 +357,9 @@ module.exports.loop = function () {
         }
         if (creep.memory.role == 'towerCharger') {
             roleTowerCharger.run(creep);
+        }
+        if (creep.memory.role == 'towerCharger2') {
+            roleTowerCharger2.run(creep);
         }
         if (creep.memory.role == 'explorer1') {
             roleExplorer1.run(creep);

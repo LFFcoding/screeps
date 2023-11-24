@@ -1,4 +1,4 @@
-var roleTowerCharger = {
+var roleTowerCharger2 = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -73,4 +73,4 @@ var roleTowerCharger = {
     }
 };
 
-module.exports = roleTowerCharger;
+module.exports = roleTowerCharger2;
