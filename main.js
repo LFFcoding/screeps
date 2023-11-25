@@ -12,6 +12,7 @@ var roleMassAttackTroop = require('role.massAttackTroop');
 var roleCargo = require('role.cargo');
 var roleClaimer = require('role.claimer');
 var towerBrain = require('towerBrain');
+var autoGenerate = require('autoGenerate');
 
 module.exports.loop = function () {
 
@@ -22,13 +23,13 @@ module.exports.loop = function () {
     const MIN_CARGO = 3;
     const MIN_HARVESTER = 2;
     const MIN_UPGRADER = Memory.minUpgraders;
-    const MIN_BUILDER = 5;
+    const MIN_UPGRADER2 = 4;
+    const MIN_BUILDER = 1;
     const MIN_EXPLORER1 = 10;
     const MIN_CLAIMER = 0;
     const MIN_TOWERCHARGER = 1;
 
     console.log('############################################################################################')
-
 
     var MAIN_STORAGE = MAIN_ROOM.find(FIND_MY_STRUCTURES, {
         filter: (structure) => {
@@ -38,21 +39,19 @@ module.exports.loop = function () {
     var MAIN_STORAGE_ENERGY = MAIN_STORAGE[0].store.energy;
     console.log('Energia armazenada: ' + MAIN_STORAGE_ENERGY);
     if (MAIN_STORAGE_ENERGY > 100000) {
-        Memory.minUpgraders = 3
+        Memory.minUpgraders = 5
     } else if (MAIN_STORAGE_ENERGY < 50000) {
-        Memory.minUpgraders = 1
+        Memory.minUpgraders = 2
     }
 
-    var cargos = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
-
-    //verifique quantos idleTroops existem
-    var idleTroops = _.filter(Game.creeps, (creep) => creep.memory.role == 'idleTroop');
+    var cargoUnits = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
 
     // start modulo das torres
     towerBrain.run(MAIN_ROOM);
     towerBrain.run(ROOM_ALVO);
     // end modulo das torres
 
+    //Limpeza de Memória
     for (var i in Memory.creeps) {
         if (!Game.creeps[i]) {
             delete Memory.creeps[i];
@@ -60,113 +59,52 @@ module.exports.loop = function () {
         }
     };
 
-
-    var claimers = _.filter(Game.creeps, (creep) => creep.memory.role == 'claimer');
-    if (claimers.length < MIN_CLAIMER && MAIN_ROOM.energyAvailable >= 800) {
-        var newName = 'claimer' + Game.time;
-        console.log('Spawning new claimer: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, CLAIM], newName,
-            {
-                memory: {
-                    role: 'claimer'
-                }
-            }
-        )
+    //função generate(units, role, minUnits, room, minEnergy, spawn, bodyArray, passMemory); em todas as unidades
+    if (MIN_CLAIMER > 0) {
+        claimerUnits = autoGenerate.pop('claimer');
+        autoGenerate.generate(claimerUnits, 'claimer', MIN_CLAIMER, MAIN_ROOM, 800, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, CLAIM], { memory: { role: 'claimer', teste: 'ok' } });
     };
 
+    //verifica quantos harvesterUnits existem e spawna se necessário
+    if (MIN_HARVESTER > 0) {
+        var harvesterUnits = autoGenerate.pop('harvester');
+        autoGenerate.generate(harvesterUnits, 'harvester', MIN_HARVESTER, MAIN_ROOM, 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio' } });
+    }
 
-
-
-    //verifica e loga quantos harvesters existem
-    var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-
-    var defenders = _.filter(Game.creeps, (creep) => creep.memory.role == 'defender');
-    if (defenders.length < MIN_DEFENDER && MAIN_ROOM.energyAvailable >= 790) {
-        var newName = 'defender' + Game.time;
-        console.log('Spawning new defender: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK], newName,
-            {
-                memory: {
-                    role: 'defender',
-                    operacao: 'idle'
-                }
-            }
-        )
+    //verifica quantos defenderUnits existem e spawna se necessário
+    if (MIN_DEFENDER > 0) {
+        var defenderUnits = autoGenerate.pop('defender');
+        autoGenerate.generate(defenderUnits, 'defender', MIN_DEFENDER, MAIN_ROOM, 790, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK], { memory: { role: 'defender', operacao: 'idle' } });
     };
 
     //Verifica se tem creeps de classes prioritárias suficientes e ativa produção de classes menos prioritárias
-    var popOfHarvestersIsOk
-    if (harvesters.length >= MIN_HARVESTER) {
-        popOfHarvestersIsOk = true
-        console.log('Harvesters pop is Ok.')
-    } else if (harvesters.length < MIN_HARVESTER) {
-        popOfHarvestersIsOk = false
-        console.log('Harvesters pop is not OK!!!')
+    var popOfharvesterUnitsIsOk
+    if (harvesterUnits.length >= MIN_HARVESTER) {
+        popOfharvesterUnitsIsOk = true
+        console.log('harvesterUnits is Ok.')
+    } else if (harvesterUnits.length < MIN_HARVESTER) {
+        popOfharvesterUnitsIsOk = false
+        console.log('harvesterUnits is not OK!!!')
     };
     var popOfDefendersIsOk
-    if (defenders.length >= MIN_DEFENDER) {
+    if (defenderUnits.length >= MIN_DEFENDER) {
         popOfDefendersIsOk = true
-        console.log('Defenders pop is Ok.')
-    } else if (defenders.length < MIN_DEFENDER) {
+        console.log('defenderUnits is Ok.')
+    } else if (defenderUnits.length < MIN_DEFENDER) {
         popOfDefendersIsOk = false
-        console.log('Defenders pop is not OK!!!')
+        console.log('defenderUnits is not OK!!!')
     };
     var popOfCargoIsOk
-    if (cargos.length >= MIN_CARGO) {
+    if (cargoUnits.length >= MIN_CARGO) {
         popOfCargoIsOk = true
-        console.log('Cargos pop is Ok.')
-    } else if (cargos.length < MIN_CARGO) {
+        console.log('cargoUnits is Ok.')
+    } else if (cargoUnits.length < MIN_CARGO) {
         popOfCargoIsOk = false
-        console.log('Cargos pop is not OK!!!')
+        console.log('cargoUnits is not OK!!!')
     };
 
-    if (popOfHarvestersIsOk == true && popOfCargoIsOk == true) {
+    if (popOfharvesterUnitsIsOk == true && popOfCargoIsOk == true && popOfDefendersIsOk == true) {
 
-        //se houver menos idleTroopers que o necessário e houver energia suficiente para spawnar
-        if (popOfDefendersIsOk == true) {
-            if (idleTroops.length < MIN_TROOP) {
-                //verifique quantos idleTroopsSoldier existem
-                var soldiers = _.filter(Game.creeps, (creep) => (creep.memory.role == 'idleTroop' && creep.memory.class == 'soldier'));
-                if (soldiers.length < 1 && MAIN_ROOM.energyAvailable >= 1300) {
-                    //spawne um idleTroop
-                    var newName = 'Troop_Soldier_' + Game.time;
-                    console.log('Spawning new Troop: ' + newName);
-                    Game.spawns['Spawn1'].spawnCreep([TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, MOVE, ATTACK], newName,
-                        {
-                            memory: {
-                                role: 'idleTroop',
-                                class: 'soldier'
-                            }
-                        });
-                }
-                //verifique se os soldiers estão prontos e faça os healers
-                if (soldiers.length == 1) {
-                    var healers = _.filter(Game.creeps, (creep) => (creep.memory.role == 'idleTroop' && creep.memory.class == 'healer'));
-                    if (healers.length < 3 && MAIN_ROOM.energyAvailable >= 930) {
-
-                        //spawne um idleTroop
-                        var newName = 'Troop_Healer_' + Game.time;
-                        console.log('Spawning new Troop: ' + newName);
-                        Game.spawns['Spawn1'].spawnCreep([TOUGH, HEAL, MOVE, TOUGH, HEAL, MOVE, TOUGH, HEAL, MOVE], newName,
-                            {
-                                memory: {
-                                    role: 'idleTroop',
-                                    class: 'healer'
-                                }
-                            }
-                        );
-                    }
-                }
-            }
-        }
-
-        //auto renew creeps
-        /*for (var i in Game.creeps) {
-            if (Game.creeps[i].ticksToLive < 500) {
-                Game.spawns['Spawn1'].renewCreep(Game.creeps[i])
-                console.log('Creep reformado: ' + Game.creeps[i].name + 'tempo de vida: ' + Game.creeps[i].ticksToLive)
-            }
-        }*/
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
 
         if (upgraders.length < MIN_UPGRADER && MAIN_ROOM.energyAvailable >= 1250) {
@@ -239,7 +177,7 @@ module.exports.loop = function () {
                         memory: {
                             role: 'builder',
                             roomFonte: MAIN_ROOM,
-                            roomWork: ROOM_ALVO
+                            roomWork: MAIN_ROOM
                         }
                     });
             }
@@ -258,64 +196,14 @@ module.exports.loop = function () {
                     }
                 });
         }
+    };
 
-        //verifica o explorers2 e spawna se precisar
-        /*var explorer2s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer2');
+    autoGenerate.generate(cargoUnits, 'cargo', MIN_CARGO, MAIN_ROOM, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio' } });
 
-        if (explorer2s.length < 10 && MAIN_ROOM.energyAvailable >= 800) {
-            var newName = 'explorer2_' + Game.time;
-            console.log('Spawning new explorer2: ' + newName);
-            Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-                {
-                    memory: {
-                        role: 'explorer2',
-                        operacao: 'vazio'
-                    }
-                });
-        }*/
-    }
-
-    //spawn harvesters automaticamente
-    if (harvesters.length < MIN_HARVESTER && MAIN_ROOM.energyAvailable >= 1250) {
-        var newName = 'Harvester' + Game.time;
-        console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], newName,
-            {
-                memory: {
-                    role: 'harvester',
-                    operacao: 'vazio'
-                }
-            }
-        );
-    }
-
-    if (cargos.length < MIN_CARGO && MAIN_ROOM.energyAvailable >= 1000) {
-        var newName = 'cargo' + Game.time;
-        console.log('Spawning new cargos: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-            {
-                memory: {
-                    role: 'cargo',
-                    operacao: 'vazio'
-                }
-            }
-        );
-    }
-
-    var upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader2');
-
-    if (upgraders2.length < 4 && ROOM_ALVO.energyAvailable >= 300) {
-        var newName = 'upgrader2_' + Game.time;
-        console.log('Spawning new upgrader2: ' + newName);
-        Game.spawns['Spawn2'].spawnCreep([WORK, CARRY, MOVE, MOVE, MOVE], newName,
-            {
-                memory: {
-                    role: 'upgrader2',
-                    roomWork: ROOM_ALVO
-                }
-            });
-    }
-
+    if (MIN_UPGRADER2 > 0) {
+        var upgrader2Units = autoGenerate.pop('upgrader2');
+        autoGenerate.generate(upgrader2Units, 'upgrader2', MIN_UPGRADER2, ROOM_ALVO, 300, 'Spawn2', [WORK, CARRY, MOVE, MOVE, MOVE], { memory: { role: 'upgrader2', roomWork: ROOM_ALVO } });
+    };
     //Spawn mostra qual unidade está spawnando
     if (Game.spawns['Spawn1'].spawning) {
         var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
