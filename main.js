@@ -43,7 +43,7 @@ module.exports.loop = function () {
     console.log('Energia armazenada: ' + MAIN_STORAGE_ENERGY);
     if (MAIN_STORAGE_ENERGY > 98000000) {
         Memory.minTroop = 24
-    } else if (MAIN_STORAGE_ENERGY < 500000) {
+    } else if (MAIN_STORAGE_ENERGY < 50000) {
         Memory.minTroop = 0
     }
 
