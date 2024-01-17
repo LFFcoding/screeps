@@ -16,18 +16,21 @@ var autoGenerate = require('autoGenerate');
 
 module.exports.loop = function () {
 
+
     const MAIN_ROOM = Game.rooms['W8N3']
     const ROOM_ALVO = Game.rooms['W8N2']
-    const MIN_TROOP = 0;
+    const MIN_TROOP = Memory.minTroop;
     const MIN_DEFENDER = 1;
     const MIN_CARGO = 3;
     const MIN_HARVESTER = 2;
-    const MIN_UPGRADER = Memory.minUpgraders;
-    const MIN_UPGRADER2 = 4;
-    const MIN_BUILDER = 1;
-    const MIN_EXPLORER1 = 10;
+    const MIN_UPGRADER = 1;
+    const MIN_UPGRADER2 = 1;
+    const MIN_BUILDER = 10;
+    const MIN_EXPLORER1 = 5;
     const MIN_CLAIMER = 0;
     const MIN_TOWERCHARGER = 1;
+
+    Memory.mainRoomSpawn = MAIN_ROOM.find(FIND_MY_SPAWNS);
 
     console.log('############################################################################################')
 
@@ -38,10 +41,10 @@ module.exports.loop = function () {
     });
     var MAIN_STORAGE_ENERGY = MAIN_STORAGE[0].store.energy;
     console.log('Energia armazenada: ' + MAIN_STORAGE_ENERGY);
-    if (MAIN_STORAGE_ENERGY > 100000) {
-        Memory.minUpgraders = 5
-    } else if (MAIN_STORAGE_ENERGY < 50000) {
-        Memory.minUpgraders = 2
+    if (MAIN_STORAGE_ENERGY > 98000000) {
+        Memory.minTroop = 24
+    } else if (MAIN_STORAGE_ENERGY < 500000) {
+        Memory.minTroop = 0
     }
 
     var cargoUnits = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
@@ -59,11 +62,19 @@ module.exports.loop = function () {
         }
     };
 
+
+
     //função generate(units, role, minUnits, room, minEnergy, spawn, bodyArray, passMemory); em todas as unidades
     if (MIN_CLAIMER > 0) {
-        claimerUnits = autoGenerate.pop('claimer');
+        var claimerUnits = autoGenerate.pop('claimer');
         autoGenerate.generate(claimerUnits, 'claimer', MIN_CLAIMER, MAIN_ROOM, 800, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, CLAIM], { memory: { role: 'claimer', teste: 'ok' } });
     };
+
+    //verifica quantos idleTroop existem e spawna se necessário
+    if (MIN_TROOP > 0) {
+        var idleTroopUnits = autoGenerate.pop('idleTroop');
+        autoGenerate.generate(idleTroopUnits, 'idleTroop', MIN_TROOP, MAIN_ROOM, 430, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK], { memory: { role: 'idleTroop', class: 'soldier' } });
+    }
 
     //verifica quantos harvesterUnits existem e spawna se necessário
     if (MIN_HARVESTER > 0) {
@@ -167,35 +178,13 @@ module.exports.loop = function () {
         }
 
         if (constructions.length > 0) {
-            var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
 
-            if (builders.length < MIN_BUILDER && MAIN_ROOM.energyAvailable >= 1250) {
-                var newName = 'builder' + Game.time;
-                console.log('Spawning new builder: ' + newName);
-                Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], newName,
-                    {
-                        memory: {
-                            role: 'builder',
-                            roomFonte: MAIN_ROOM,
-                            roomWork: MAIN_ROOM
-                        }
-                    });
-            }
+            let builderUnits = autoGenerate.pop('builder');
+            autoGenerate.generate(builderUnits, 'builder', MIN_BUILDER, MAIN_ROOM, 1250, 'Spawn1', [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'builder', roomFonte: MAIN_ROOM, roomWork: MAIN_ROOM } });
         }
 
-        var explorer1s = _.filter(Game.creeps, (creep) => creep.memory.role == 'explorer1');
-
-        if (explorer1s.length < MIN_EXPLORER1 && MAIN_ROOM.energyAvailable >= 1250) {
-            var newName = 'explorer1_' + Game.time;
-            console.log('Spawning new explorer1: ' + newName);
-            Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], newName,
-                {
-                    memory: {
-                        role: 'explorer1',
-                        operacao: 'vazio'
-                    }
-                });
-        }
+        let explorer1Units = autoGenerate.pop('explorer1');
+        autoGenerate.generate(explorer1Units, 'explorer1', MIN_EXPLORER1, MAIN_ROOM, 1250, 'Spawn1', [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'explorer1', operacao: 'vazio' } });
     };
 
     autoGenerate.generate(cargoUnits, 'cargo', MIN_CARGO, MAIN_ROOM, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio' } });
@@ -205,22 +194,15 @@ module.exports.loop = function () {
         autoGenerate.generate(upgrader2Units, 'upgrader2', MIN_UPGRADER2, ROOM_ALVO, 300, 'Spawn2', [WORK, CARRY, MOVE, MOVE, MOVE], { memory: { role: 'upgrader2', roomWork: ROOM_ALVO } });
     };
     //Spawn mostra qual unidade está spawnando
-    if (Game.spawns['Spawn1'].spawning) {
-        var spawningCreep = Game.creeps[Game.spawns['Spawn1'].spawning.name];
-        Game.spawns['Spawn1'].room.visual.text(
-            '🛠️' + spawningCreep.memory.role,
-            Game.spawns['Spawn1'].pos.x + 1,
-            Game.spawns['Spawn1'].pos.y,
-            { align: 'left', opacity: 0.8 });
-    }
-
-    if (Game.spawns['Spawn2'].spawning) {
-        var spawningCreep = Game.creeps[Game.spawns['Spawn2'].spawning.name];
-        Game.spawns['Spawn2'].room.visual.text(
-            '🛠️' + spawningCreep.memory.role,
-            Game.spawns['Spawn2'].pos.x + 1,
-            Game.spawns['Spawn2'].pos.y,
-            { align: 'left', opacity: 0.8 });
+    for (let spawn in Game.spawns) {
+        if (Game.spawns[spawn].spawning) {
+            var spawningCreep = Game.creeps[Game.spawns[spawn].spawning.name];
+            Game.spawns[spawn].room.visual.text(
+                '🛠️' + spawningCreep.memory.role,
+                Game.spawns[spawn].pos.x + 1,
+                Game.spawns[spawn].pos.y,
+                { align: 'left', opacity: 0.8 });
+        } 
     }
 
     //seta as funções dos creeps de acordo com a role
@@ -233,7 +215,7 @@ module.exports.loop = function () {
             roleCargo.run(creep);
         }
         if (creep.memory.role == 'builder') {
-            creep.memory.roomWork = ROOM_ALVO;
+            creep.memory.roomWork = MAIN_ROOM;
             creep.memory.roomFonte = MAIN_ROOM;
             roleBuilder.run(creep);
         }
@@ -261,7 +243,8 @@ module.exports.loop = function () {
         if (creep.memory.role == 'idleTroop') {
             roleIdleTroop.run(creep);
         }
-        if (creep.memory.role == 'idleTroop' && (idleTroops.length >= MIN_TROOP)) {
+        if (creep.memory.role == 'idleTroop' && (idleTroopUnits.length >= MIN_TROOP)) {
+            console.log(idleTroopUnits.length, MIN_TROOP)
             creep.memory.role = 'massAttackTroop'
             roleMassAttackTroop.run(creep);
         }
