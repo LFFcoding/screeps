@@ -187,7 +187,7 @@ module.exports.loop = function () {
         autoGenerate.generate(explorer1Units, 'explorer1', MIN_EXPLORER1, MAIN_ROOM, 1250, 'Spawn1', [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'explorer1', operacao: 'vazio' } });
     };
 
-    autoGenerate.generate(cargoUnits, 'cargo', MIN_CARGO, MAIN_ROOM, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio' } });
+    autoGenerate.generate(cargoUnits, 'cargo', MIN_CARGO, MAIN_ROOM, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', workRoom: MAIN_ROOM } });
 
     if (MIN_UPGRADER2 > 0) {
         var upgrader2Units = autoGenerate.pop('upgrader2');
@@ -212,10 +212,11 @@ module.exports.loop = function () {
             roleHarvester.run(creep);
         }
         if (creep.memory.role == 'cargo') {
+            creep.memory.roomWork = MAIN_ROOM;
             roleCargo.run(creep);
         }
         if (creep.memory.role == 'builder') {
-            creep.memory.roomWork = MAIN_ROOM;
+            creep.memory.roomWork = ROOM_ALVO;
             creep.memory.roomFonte = MAIN_ROOM;
             roleBuilder.run(creep);
         }

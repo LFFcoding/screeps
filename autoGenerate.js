@@ -1,4 +1,8 @@
 var autoGenerate = {
+    popWithWorkRoom(role, workRoom) {
+        var units = _.filter(Game.creeps, (creep) => ((creep.memory.role == role) && (creep.memory.workRoom == workRoom)));
+        return units
+    },
     pop(role) {
         var units = _.filter(Game.creeps, (creep) => creep.memory.role == role);
         return units
