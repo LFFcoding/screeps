@@ -14,6 +14,11 @@ var roleClaimer = require('role.claimer');
 var towerBrain = require('towerBrain');
 var autoGenerate = require('autoGenerate');
 
+const gameParams = {
+    MAIN_ROOM: Game.rooms['W8N3'],
+    ROOM_ALVO: Game.rooms['W8N2']
+}
+
 module.exports.loop = function () {
 
 
@@ -26,7 +31,7 @@ module.exports.loop = function () {
     const MIN_UPGRADER = 1;
     const MIN_UPGRADER2 = 1;
     const MIN_BUILDER = 10;
-    const MIN_EXPLORER1 = 5;
+    const MIN_EXPLORER1 = 1;
     const MIN_CLAIMER = 0;
     const MIN_TOWERCHARGER = 1;
 
@@ -47,7 +52,13 @@ module.exports.loop = function () {
         Memory.minTroop = 0
     }
 
-    var cargoUnits = _.filter(Game.creeps, (creep) => creep.memory.role == 'cargo');
+    //verifica quantos cargo existem na MAIN_ROOM e spawna se necessário
+    var cargoUnitsMainRoom = autoGenerate.popWithWorkRoom('cargo', gameParams.MAIN_ROOM);
+    autoGenerate.generate(cargoUnitsMainRoom, 'cargo', MIN_CARGO, gameParams.MAIN_ROOM, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', workRoom: gameParams.MAIN_ROOM } });
+
+    //verifica quantos cargo existem na ROOM_ALVO e spawna se necessário
+    var cargoUnitsRoomAlvo = autoGenerate.popWithWorkRoom('cargo', gameParams.ROOM_ALVO);
+    autoGenerate.generate(cargoUnitsRoomAlvo, 'cargo', MIN_CARGO, gameParams.ROOM_ALVO, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', workRoom: gameParams.ROOM_ALVO } });
 
     // start modulo das torres
     towerBrain.run(MAIN_ROOM);
@@ -76,10 +87,13 @@ module.exports.loop = function () {
         autoGenerate.generate(idleTroopUnits, 'idleTroop', MIN_TROOP, MAIN_ROOM, 430, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK], { memory: { role: 'idleTroop', class: 'soldier' } });
     }
 
-    //verifica quantos harvesterUnits existem e spawna se necessário
+    //verifica quantos harvesterUnitsMainRoom existem na room principal e spawna se necessário
     if (MIN_HARVESTER > 0) {
-        var harvesterUnits = autoGenerate.pop('harvester');
-        autoGenerate.generate(harvesterUnits, 'harvester', MIN_HARVESTER, MAIN_ROOM, 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio' } });
+        var harvesterUnitsMainRoom = autoGenerate.popWithWorkRoom('harvester', gameParams.MAIN_ROOM);
+        autoGenerate.generate(harvesterUnitsMainRoom, 'harvester', MIN_HARVESTER, gameParams.MAIN_ROOM, 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio', workRoom: gameParams.MAIN_ROOM } });
+
+        var harvesterUnitsRoomAlvo = autoGenerate.popWithWorkRoom('harvester', gameParams.ROOM_ALVO);
+        autoGenerate.generate(harvesterUnitsRoomAlvo, 'harvester', MIN_HARVESTER, gameParams.ROOM_ALVO, 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio', workRoom: gameParams.ROOM_ALVO } });
     }
 
     //verifica quantos defenderUnits existem e spawna se necessário
@@ -89,13 +103,13 @@ module.exports.loop = function () {
     };
 
     //Verifica se tem creeps de classes prioritárias suficientes e ativa produção de classes menos prioritárias
-    var popOfharvesterUnitsIsOk
-    if (harvesterUnits.length >= MIN_HARVESTER) {
-        popOfharvesterUnitsIsOk = true
-        console.log('harvesterUnits is Ok.')
-    } else if (harvesterUnits.length < MIN_HARVESTER) {
-        popOfharvesterUnitsIsOk = false
-        console.log('harvesterUnits is not OK!!!')
+    var popOfharvesterUnitsMainRoomIsOk
+    if (harvesterUnitsMainRoom.length >= MIN_HARVESTER) {
+        popOfharvesterUnitsMainRoomIsOk = true
+        console.log('harvesterUnitsMainRoom is Ok.')
+    } else if (harvesterUnitsMainRoom.length < MIN_HARVESTER) {
+        popOfharvesterUnitsMainRoomIsOk = false
+        console.log('harvesterUnitsMainRoom is not OK!!!')
     };
     var popOfDefendersIsOk
     if (defenderUnits.length >= MIN_DEFENDER) {
@@ -106,15 +120,15 @@ module.exports.loop = function () {
         console.log('defenderUnits is not OK!!!')
     };
     var popOfCargoIsOk
-    if (cargoUnits.length >= MIN_CARGO) {
+    if (cargoUnitsMainRoom.length >= MIN_CARGO) {
         popOfCargoIsOk = true
-        console.log('cargoUnits is Ok.')
-    } else if (cargoUnits.length < MIN_CARGO) {
+        console.log('cargoUnitsMainRoom is Ok.')
+    } else if (cargoUnitsMainRoom.length < MIN_CARGO) {
         popOfCargoIsOk = false
-        console.log('cargoUnits is not OK!!!')
+        console.log('cargoUnitsMainRoom is not OK!!!')
     };
 
-    if (popOfharvesterUnitsIsOk == true && popOfCargoIsOk == true && popOfDefendersIsOk == true) {
+    if (popOfharvesterUnitsMainRoomIsOk == true && popOfCargoIsOk == true && popOfDefendersIsOk == true) {
 
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
 
@@ -187,7 +201,6 @@ module.exports.loop = function () {
         autoGenerate.generate(explorer1Units, 'explorer1', MIN_EXPLORER1, MAIN_ROOM, 1250, 'Spawn1', [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'explorer1', operacao: 'vazio' } });
     };
 
-    autoGenerate.generate(cargoUnits, 'cargo', MIN_CARGO, MAIN_ROOM, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', workRoom: MAIN_ROOM } });
 
     if (MIN_UPGRADER2 > 0) {
         var upgrader2Units = autoGenerate.pop('upgrader2');

@@ -1,6 +1,7 @@
 var autoGenerate = {
-    popWithWorkRoom(role, workRoom) {
-        var units = _.filter(Game.creeps, (creep) => ((creep.memory.role == role) && (creep.memory.workRoom == workRoom)));
+    popWithWorkRoom(role, pworkRoom) {
+        let unitsByRole = _.filter(Game.creeps, (creep) => creep.memory.role == role);
+        let units = unitsByRole.filter((unit) => unit.memory.workRoom.name == pworkRoom.name);
         return units
     },
     pop(role) {
@@ -8,15 +9,12 @@ var autoGenerate = {
         return units
     },
     generate(units, role, minUnits, room, minEnergy, spawnName, bodyArray, passMemory) {
-        let spawnsInRoom = room.find(FIND_MY_SPAWNS);
-        for (var i = 0; i < spawnsInRoom.length; i++) {
-            if (spawnsInRoom[i].spawning === null) {
-                let idleSpawn = spawnsInRoom[i];
-                if (units.length < minUnits && room.energyAvailable >= minEnergy) {
-                    console.log('idleSpawnEncontrado >>>>>', idleSpawn);
+        for (let spawn in Game.spawns) {
+            if (Game.spawns[spawn].spawning === null) {
+                if (units.length < minUnits && Game.spawns[spawn].room.energyAvailable >= minEnergy) {
                     var newName = (role + '_' + Game.time);
                     console.log('Spawning new ' + role + ': ' + newName);
-                    idleSpawn.spawnCreep(bodyArray, newName, passMemory);
+                    Game.spawns[spawn].spawnCreep(bodyArray, newName, passMemory);
                 };
                 break;
             };
