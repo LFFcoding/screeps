@@ -32,8 +32,9 @@ module.exports.loop = function () {
     const MIN_UPGRADER2 = 1;
     const MIN_BUILDER = 10;
     const MIN_EXPLORER1 = 1;
-    const MIN_CLAIMER = 0;
+    const MIN_CLAIMER = 2;
     const MIN_TOWERCHARGER = 1;
+    let idleTroopUnits = autoGenerate.pop('idleTroop');
 
     Memory.mainRoomSpawn = MAIN_ROOM.find(FIND_MY_SPAWNS);
 
@@ -46,8 +47,8 @@ module.exports.loop = function () {
     });
     var MAIN_STORAGE_ENERGY = MAIN_STORAGE[0].store.energy;
     console.log('Energia armazenada: ' + MAIN_STORAGE_ENERGY);
-    if (MAIN_STORAGE_ENERGY > 98000000) {
-        Memory.minTroop = 24
+    if (MAIN_STORAGE_ENERGY > 980000) {
+        Memory.minTroop = 0
     } else if (MAIN_STORAGE_ENERGY < 50000) {
         Memory.minTroop = 0
     }
@@ -81,12 +82,6 @@ module.exports.loop = function () {
         autoGenerate.generate(claimerUnits, 'claimer', MIN_CLAIMER, MAIN_ROOM, 800, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, CLAIM], { memory: { role: 'claimer', teste: 'ok' } });
     };
 
-    //verifica quantos idleTroop existem e spawna se necessário
-    if (MIN_TROOP > 0) {
-        var idleTroopUnits = autoGenerate.pop('idleTroop');
-        autoGenerate.generate(idleTroopUnits, 'idleTroop', MIN_TROOP, MAIN_ROOM, 430, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK], { memory: { role: 'idleTroop', class: 'soldier' } });
-    }
-
     //verifica quantos harvesterUnitsMainRoom existem na room principal e spawna se necessário
     if (MIN_HARVESTER > 0) {
         var harvesterUnitsMainRoom = autoGenerate.popWithWorkRoom('harvester', gameParams.MAIN_ROOM);
@@ -104,10 +99,10 @@ module.exports.loop = function () {
 
     //Verifica se tem creeps de classes prioritárias suficientes e ativa produção de classes menos prioritárias
     var popOfharvesterUnitsMainRoomIsOk
-    if (harvesterUnitsMainRoom.length >= MIN_HARVESTER) {
+    if ((harvesterUnitsMainRoom.length >= MIN_HARVESTER) && (harvesterUnitsRoomAlvo.length >= MIN_HARVESTER)) {
         popOfharvesterUnitsMainRoomIsOk = true
         console.log('harvesterUnitsMainRoom is Ok.')
-    } else if (harvesterUnitsMainRoom.length < MIN_HARVESTER) {
+    } else if ((harvesterUnitsMainRoom.length < MIN_HARVESTER) && (harvesterUnitsRoomAlvo.length < MIN_HARVESTER)) {
         popOfharvesterUnitsMainRoomIsOk = false
         console.log('harvesterUnitsMainRoom is not OK!!!')
     };
@@ -120,15 +115,17 @@ module.exports.loop = function () {
         console.log('defenderUnits is not OK!!!')
     };
     var popOfCargoIsOk
-    if (cargoUnitsMainRoom.length >= MIN_CARGO) {
+    if ((cargoUnitsMainRoom.length >= MIN_CARGO) && (cargoUnitsRoomAlvo.length >= MIN_CARGO)) {
         popOfCargoIsOk = true
         console.log('cargoUnitsMainRoom is Ok.')
-    } else if (cargoUnitsMainRoom.length < MIN_CARGO) {
+    } else if ((cargoUnitsMainRoom.length < MIN_CARGO) && (cargoUnitsRoomAlvo.length < MIN_CARGO)) {
         popOfCargoIsOk = false
         console.log('cargoUnitsMainRoom is not OK!!!')
     };
 
     if (popOfharvesterUnitsMainRoomIsOk == true && popOfCargoIsOk == true && popOfDefendersIsOk == true) {
+
+
 
         var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
 
@@ -199,6 +196,12 @@ module.exports.loop = function () {
 
         let explorer1Units = autoGenerate.pop('explorer1');
         autoGenerate.generate(explorer1Units, 'explorer1', MIN_EXPLORER1, MAIN_ROOM, 1250, 'Spawn1', [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'explorer1', operacao: 'vazio' } });
+
+        //verifica quantos idleTroop existem e spawna se necessário
+        if (MIN_TROOP > 0) {
+            console.log('idleTroops: ', idleTroopUnits.length);
+            autoGenerate.generate(idleTroopUnits, 'idleTroop', MIN_TROOP, MAIN_ROOM, 430, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK], { memory: { role: 'idleTroop', class: 'soldier' } });
+        }
     };
 
 
@@ -225,7 +228,6 @@ module.exports.loop = function () {
             roleHarvester.run(creep);
         }
         if (creep.memory.role == 'cargo') {
-            creep.memory.roomWork = MAIN_ROOM;
             roleCargo.run(creep);
         }
         if (creep.memory.role == 'builder') {
@@ -258,8 +260,7 @@ module.exports.loop = function () {
             roleIdleTroop.run(creep);
         }
         if (creep.memory.role == 'idleTroop' && (idleTroopUnits.length >= MIN_TROOP)) {
-            console.log(idleTroopUnits.length, MIN_TROOP)
-            creep.memory.role = 'massAttackTroop'
+            creep.memory.role = 'massAttackTroop';
             roleMassAttackTroop.run(creep);
         }
         if (creep.memory.role == 'massAttackTroop') {

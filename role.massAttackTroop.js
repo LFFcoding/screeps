@@ -4,11 +4,41 @@ var roleMassAttackTroop = {
     run: function (creep) {
 
         //se estiver na room inimiga
-        if (creep.room == Game.rooms['W7N2'] && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
+        if (creep.room == Game.rooms['W7N1'] && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
+            console.log('dentro da sala alvo');
             //identifique a classe
             if (creep.memory.class == 'soldier') {
-                //identifique torres inimigas
-                var enemyTowers = creep.room.find(FIND_STRUCTURES, {
+                //verifique se há creeps inimigos
+                var enemy = creep.room.find(FIND_HOSTILE_CREEPS);
+                var enemyTowers = creep.room.find(FIND_HOSTILE_STRUCTURES);
+                FIND_HOSTILE_CONSTRUCTION_SITES
+                //caso exista creeps inimigos
+                if (enemy.length > 0) {
+                    let etg = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+                    //ataque-os
+                    if (creep.attack(etg) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(etg, { visualizePathStyle: { stroke: '#FF0000' } });
+                    }
+                } else if (enemyTowers.length > 0) {
+                    ttg = creep.pos.findClosestByRange(FIND_HOSTILE_STRUCTURES);
+
+                    //tente atacá-la e se falhar, chegue mais perto
+                    if (creep.attack(ttg) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(ttg, { visualizePathStyle: { stroke: '#FF0000' } });
+                    };
+
+                } else {
+                    cstg = creep.pos.findClosestByRange(FIND_HOSTILE_CONSTRUCTION_SITES);
+                    console.log('alvo', cstg);
+
+                    //tente atacá-la e se falhar, chegue mais perto
+                    if (creep.attack(cstg) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(cstg, { visualizePathStyle: { stroke: '#FF0000' } });
+                    };
+
+
+                };
+               /* var enemyTowers = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_TOWER && structure.owner.username == 'dawalishi122')
                     }
@@ -42,7 +72,7 @@ var roleMassAttackTroop = {
 
                     }
 
-                }
+                }*/
             } else if (creep.memory.class == 'healer') {
                 //identifique os creeps aliados
                 var myCreeps = creep.room.find(FIND_MY_CREEPS, {
@@ -53,11 +83,11 @@ var roleMassAttackTroop = {
                 if (myCreeps.length > 0) {
                     if (creep.heal(myCreeps[0]) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(myCreeps[0].pos)
-                    }
+                    };
                 } else if (myCreeps.length == 0 && creep.hits < creep.hitsMax) {
                     creep.heal(creep)
-                }
-            }
+                };
+            };
 
 
 
@@ -65,9 +95,9 @@ var roleMassAttackTroop = {
         } else {
             //vá para a room inimiga
 
-            creep.moveTo(new RoomPosition(33, 25, 'W7N2'))
+            creep.moveTo(new RoomPosition(32, 33, 'W7N1'));
 
-        }
+        };
     }
 };
 
