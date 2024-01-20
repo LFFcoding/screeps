@@ -175,7 +175,7 @@ module.exports.loop = function () {
         var controllers = new Array();
         for (var room in Game.rooms) {
             controllers.push(Game.rooms[room].controller)
-            console.log(Game.rooms[room].name)
+            console.log('Com acesso a room: ', Game.rooms[room].name);
         }
         Memory.controllers = controllers
         var roomWithCs = new Array();

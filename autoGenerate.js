@@ -3,7 +3,6 @@ var autoGenerate = {
         let unitsByRole = _.filter(Game.creeps, (creep) => creep.memory.role == role);
         let unitsByTake = unitsByRole.filter((unit) => unit.memory.takeRoom.name == takeRoom.name);
         let units = unitsByTake.filter((unit) => unit.memory.putRoom.name == putRoom.name);
-        console.log('upg MR: ', units.length);
         return units
     },
     popWithWorkRoom(role, pworkRoom) {
