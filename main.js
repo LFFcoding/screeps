@@ -231,7 +231,9 @@ module.exports.loop = function () {
             roleCargo.run(creep);
         }
         if (creep.memory.role == 'builder') {
+            if (roomWithCs !== undefined) {
             creep.memory.putRoom = roomWithCs[0];
+            };
             roleBuilder.run(creep);
         }
         if (creep.memory.role == 'upgrader') {
