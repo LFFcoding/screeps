@@ -28,11 +28,11 @@ module.exports.loop = function () {
     const MIN_DEFENDER = 1;
     const MIN_CARGO = 3;
     const MIN_HARVESTER = 2;
-    const MIN_UPGRADER = 1;
+    const MIN_UPGRADER = 5;
     const MIN_UPGRADER2 = 1;
     const MIN_BUILDER = 10;
     const MIN_EXPLORER1 = 1;
-    const MIN_CLAIMER = 2;
+    const MIN_CLAIMER = 0;
     const MIN_TOWERCHARGER = 1;
     let idleTroopUnits = autoGenerate.pop('idleTroop');
 
@@ -48,8 +48,10 @@ module.exports.loop = function () {
     var MAIN_STORAGE_ENERGY = MAIN_STORAGE[0].store.energy;
     console.log('Energia armazenada: ' + MAIN_STORAGE_ENERGY);
     if (MAIN_STORAGE_ENERGY > 980000) {
+        Memory.EXTERNAL_UPGRADERS = 25;
         Memory.minTroop = 0
     } else if (MAIN_STORAGE_ENERGY < 50000) {
+        Memory.EXTERNAL_UPGRADERS = 2;
         Memory.minTroop = 0
     }
 
@@ -94,7 +96,7 @@ module.exports.loop = function () {
     //verifica quantos defenderUnits existem e spawna se necessário
     if (MIN_DEFENDER > 0) {
         var defenderUnits = autoGenerate.pop('defender');
-        autoGenerate.generate(defenderUnits, 'defender', MIN_DEFENDER, MAIN_ROOM, 790, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK], { memory: { role: 'defender', operacao: 'idle' } });
+        autoGenerate.generate(defenderUnits, 'defender', MIN_DEFENDER, MAIN_ROOM, 790, 'Spawn1', [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, MOVE, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, ATTACK, ATTACK], { memory: { role: 'defender', operacao: 'idle', takeRoom: MAIN_ROOM, putRoom: MAIN_ROOM } });
     };
 
     //Verifica se tem creeps de classes prioritárias suficientes e ativa produção de classes menos prioritárias
@@ -126,14 +128,16 @@ module.exports.loop = function () {
     if (popOfharvesterUnitsMainRoomIsOk == true && popOfCargoIsOk == true && popOfDefendersIsOk == true) {
 
 
+        var upgraders = autoGenerate.popWithRooms('upgrader', MAIN_ROOM, MAIN_ROOM);
 
-        var upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
+        if (upgraders.length < MIN_UPGRADER) {
+            autoGenerate.generateV2(upgraders, 'upgrader', MIN_UPGRADER, 1250, [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'upgrader', upgrading: false, takeRoom: MAIN_ROOM, putRoom: MAIN_ROOM } });
+        }
 
-        if (upgraders.length < MIN_UPGRADER && MAIN_ROOM.energyAvailable >= 1250) {
-            var newName = 'upgrader' + Game.time;
-            console.log('Spawning new upgrader: ' + newName);
-            Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], newName,
-                { memory: { role: 'upgrader' } });
+        var upgradersw7n1 = autoGenerate.popWithRooms('upgrader', MAIN_ROOM, Game.rooms['W7N1']);
+
+        if (upgradersw7n1.length < Memory.EXTERNAL_UPGRADERS) {
+            autoGenerate.generateV2(upgradersw7n1, 'upgrader', Memory.EXTERNAL_UPGRADERS, 1250, [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'upgrader', upgrading: false, takeRoom: MAIN_ROOM, putRoom: Game.rooms['W7N1'] } });
         }
 
         var towerChargers1 = _.filter(Game.creeps, (creep) => (creep.memory.role == 'towerCharger'));
@@ -174,24 +178,20 @@ module.exports.loop = function () {
             console.log(Game.rooms[room].name)
         }
         Memory.controllers = controllers
-        var constructions = new Array();
+        var roomWithCs = new Array();
         if (controllers.length > 0) {
             for (var controller in controllers) {
-                var finded_cs = controllers[controller].room.find(FIND_MY_CONSTRUCTION_SITES)
-                if (finded_cs.length > 0) {
-                    if (constructions) {
-                        constructions.push(finded_cs)
-                    } else {
-                        constructions.push(finded_cs)
-                    }
+                if (controllers[controller].room.find(FIND_MY_CONSTRUCTION_SITES).length > 0) {
+                    roomWithCs.push(controllers[controller].room); 
                 }
             }
         }
 
-        if (constructions.length > 0) {
+        if (roomWithCs.length > 0) {
+            console.log(roomWithCs[0]);
 
             let builderUnits = autoGenerate.pop('builder');
-            autoGenerate.generate(builderUnits, 'builder', MIN_BUILDER, MAIN_ROOM, 1250, 'Spawn1', [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'builder', roomFonte: MAIN_ROOM, roomWork: MAIN_ROOM } });
+            autoGenerate.generate(builderUnits, 'builder', MIN_BUILDER, MAIN_ROOM, 1250, 'Spawn1', [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'builder', takeRoom: MAIN_ROOM, putRoom: roomWithCs } });
         }
 
         let explorer1Units = autoGenerate.pop('explorer1');
@@ -207,7 +207,7 @@ module.exports.loop = function () {
 
     if (MIN_UPGRADER2 > 0) {
         var upgrader2Units = autoGenerate.pop('upgrader2');
-        autoGenerate.generate(upgrader2Units, 'upgrader2', MIN_UPGRADER2, ROOM_ALVO, 300, 'Spawn2', [WORK, CARRY, MOVE, MOVE, MOVE], { memory: { role: 'upgrader2', roomWork: ROOM_ALVO } });
+        autoGenerate.generate(upgrader2Units, 'upgrader2', MIN_UPGRADER2, ROOM_ALVO, 300, 'Spawn2', [WORK, CARRY, MOVE, MOVE, MOVE], { memory: { role: 'upgrader2', workRoom: ROOM_ALVO } });
     };
     //Spawn mostra qual unidade está spawnando
     for (let spawn in Game.spawns) {
@@ -231,8 +231,7 @@ module.exports.loop = function () {
             roleCargo.run(creep);
         }
         if (creep.memory.role == 'builder') {
-            creep.memory.roomWork = ROOM_ALVO;
-            creep.memory.roomFonte = MAIN_ROOM;
+            creep.memory.putRoom = roomWithCs[0];
             roleBuilder.run(creep);
         }
         if (creep.memory.role == 'upgrader') {
@@ -270,7 +269,7 @@ module.exports.loop = function () {
             roleClaimer.run(creep);
         }
         if (creep.memory.role == 'upgrader2') {
-            creep.memory.roomWork = ROOM_ALVO
+            creep.memory.workRoom = ROOM_ALVO
             roleUpgrader2.run(creep);
         }
 

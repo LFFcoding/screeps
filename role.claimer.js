@@ -2,24 +2,24 @@ var roleClaimer = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        var ROOM_CONTROLLER = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return (structure.structureType == STRUCTURE_CONTROLLER);
-            }
-        });
-
-
-        if (creep.room == Game.rooms['W7N2'] && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
-            if (ROOM_CONTROLLER.length > 0) {
-                if (creep.attackController(ROOM_CONTROLLER[0]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(ROOM_CONTROLLER[0], { visualizePathStyle: { stroke: '#ffffff' } });
+        if (creep.room.name == 'W7N1' && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
+            console.log('1estou na: ', creep.room.name, ' x: ', creep.pos.x, ' y: ', creep.pos.y, ' deveria estar na: ', 'W7N1');
+            var ROOM_CONTROLLER = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType == STRUCTURE_CONTROLLER);
+                }
+            });
+            if (ROOM_CONTROLLER) {
+                if (creep.claimController(ROOM_CONTROLLER) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(ROOM_CONTROLLER, { visualizePathStyle: { stroke: '#ffffff' } });
                 }
             }
-        } else if (creep.room != Game.rooms['W7N1'] || creep.pos.y <= 0) {
-            creep.moveTo(new RoomPosition(25, 25, 'W7N2'))
-        }
+        } else {
+            console.log('2estou na: ', creep.room.name, ' x: ', creep.pos.x, ' y: ', creep.pos.y, ' deveria estar na: ', Game.rooms['W7N1']);
+            creep.moveTo(new RoomPosition(39, 3, 'W7N1'));
+        };
     }
-}
+};
 
 
 module.exports = roleClaimer;

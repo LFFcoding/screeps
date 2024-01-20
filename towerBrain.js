@@ -1,10 +1,6 @@
 var towerBrain = {
     run: function (room) {
-        var hostiles = room.find(FIND_CREEPS, {
-            filter: (creepfinded) => {
-                return (creepfinded.owner.username == 'dawalishi122')
-            }
-        })
+        var hostiles = room.find(FIND_HOSTILE_CREEPS);
         var towers = room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.structureType == STRUCTURE_TOWER)

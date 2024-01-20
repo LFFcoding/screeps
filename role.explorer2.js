@@ -51,7 +51,7 @@ var roleExplorer2 = {
                 } else if (creep.store.getFreeCapacity() == creep.store.getCapacity()) {
                     creep.memory.operacao = 'vazio'
                 }
-            } else if (creep.room != Game.rooms['W8N3'] || creep.pos.y >= 49) {
+            } else {
                 creep.moveTo(new RoomPosition(15, 21, 'W8N3'))
             }
         }

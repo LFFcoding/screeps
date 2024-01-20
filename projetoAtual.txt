@@ -1,2 +1,1 @@
-melhorando o funcionamento dos harvesters, construir funções otimizadas para localizar o source mais próximo
-futuramente implementar um harvester por source
+criando o roomManagement
