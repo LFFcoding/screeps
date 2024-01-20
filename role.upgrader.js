@@ -1,4 +1,5 @@
-var roleUpgrader = {
+const creepsFunctions = require('creepsFunctions');
+const roleUpgrader = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
@@ -13,9 +14,7 @@ var roleUpgrader = {
 
         if (creep.memory.upgrading) {
             if (creep.room.name == creep.memory.putRoom.name && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
-                if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#ffffff' } });
-                }
+                creepsFunctions.upgradeControllerOfCurrentCreepRoom(creep);
             } else {
                 creep.moveTo(new RoomPosition(25, 25, creep.memory.putRoom.name));
             }

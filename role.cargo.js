@@ -111,7 +111,7 @@ var roleCargo = {
 
 
 
-        if (creep.room.name == creep.memory.workRoom.name && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
+        if (creep.room.name == creep.memory.putRoom.name && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
 
             var TARGETS_FREE = creep.room.find(FIND_STRUCTURES, {
                 filter: (structure) => {
@@ -160,8 +160,8 @@ var roleCargo = {
                     creep.memory.operacao = 'vazio'
                 }
             }
-        } else if (creep.room.name != creep.memory.workRoom.name) {
-            creep.moveTo(new RoomPosition(33, 25, creep.memory.workRoom.name));
+        } else {
+            creep.moveTo(new RoomPosition(33, 25, creep.memory.putRoom.name));
         }
     }
 };

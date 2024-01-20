@@ -48,20 +48,20 @@ module.exports.loop = function () {
     var MAIN_STORAGE_ENERGY = MAIN_STORAGE[0].store.energy;
     console.log('Energia armazenada: ' + MAIN_STORAGE_ENERGY);
     if (MAIN_STORAGE_ENERGY > 980000) {
-        Memory.EXTERNAL_UPGRADERS = 25;
+        Memory.EXTERNAL_UPGRADERS = 15;
         Memory.minTroop = 0
     } else if (MAIN_STORAGE_ENERGY < 50000) {
-        Memory.EXTERNAL_UPGRADERS = 2;
+        Memory.EXTERNAL_UPGRADERS = 5;
         Memory.minTroop = 0
-    }
+    };
 
     //verifica quantos cargo existem na MAIN_ROOM e spawna se necessário
-    var cargoUnitsMainRoom = autoGenerate.popWithWorkRoom('cargo', gameParams.MAIN_ROOM);
-    autoGenerate.generate(cargoUnitsMainRoom, 'cargo', MIN_CARGO, gameParams.MAIN_ROOM, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', workRoom: gameParams.MAIN_ROOM } });
+    var cargoUnitsMainRoom = autoGenerate.popWithRooms('cargo', MAIN_ROOM, MAIN_ROOM);
+    autoGenerate.generate(cargoUnitsMainRoom, 'cargo', MIN_CARGO, MAIN_ROOM, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', takeRoom: MAIN_ROOM, putRoom: MAIN_ROOM } });
 
     //verifica quantos cargo existem na ROOM_ALVO e spawna se necessário
-    var cargoUnitsRoomAlvo = autoGenerate.popWithWorkRoom('cargo', gameParams.ROOM_ALVO);
-    autoGenerate.generate(cargoUnitsRoomAlvo, 'cargo', MIN_CARGO, gameParams.ROOM_ALVO, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', workRoom: gameParams.ROOM_ALVO } });
+    var cargoUnitsRoomAlvo = autoGenerate.popWithRooms('cargo', ROOM_ALVO, ROOM_ALVO);
+    autoGenerate.generate(cargoUnitsRoomAlvo, 'cargo', MIN_CARGO, ROOM_ALVO, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', takeRoom: ROOM_ALVO, putRoom: ROOM_ALVO } });
 
     // start modulo das torres
     towerBrain.run(MAIN_ROOM);
@@ -86,11 +86,11 @@ module.exports.loop = function () {
 
     //verifica quantos harvesterUnitsMainRoom existem na room principal e spawna se necessário
     if (MIN_HARVESTER > 0) {
-        var harvesterUnitsMainRoom = autoGenerate.popWithWorkRoom('harvester', gameParams.MAIN_ROOM);
-        autoGenerate.generate(harvesterUnitsMainRoom, 'harvester', MIN_HARVESTER, gameParams.MAIN_ROOM, 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio', workRoom: gameParams.MAIN_ROOM } });
+        var harvesterUnitsMainRoom = autoGenerate.popWithRooms('harvester', MAIN_ROOM, MAIN_ROOM);
+        autoGenerate.generate(harvesterUnitsMainRoom, 'harvester', MIN_HARVESTER, gameParams.MAIN_ROOM, 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio', takeRoom: MAIN_ROOM, putRoom: MAIN_ROOM } });
 
-        var harvesterUnitsRoomAlvo = autoGenerate.popWithWorkRoom('harvester', gameParams.ROOM_ALVO);
-        autoGenerate.generate(harvesterUnitsRoomAlvo, 'harvester', MIN_HARVESTER, gameParams.ROOM_ALVO, 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio', workRoom: gameParams.ROOM_ALVO } });
+        var harvesterUnitsRoomAlvo = autoGenerate.popWithRooms('harvester', ROOM_ALVO, ROOM_ALVO);
+        autoGenerate.generate(harvesterUnitsRoomAlvo, 'harvester', MIN_HARVESTER, ROOM_ALVO, 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio', takeRoom: ROOM_ALVO, putRoom: ROOM_ALVO } });
     }
 
     //verifica quantos defenderUnits existem e spawna se necessário
