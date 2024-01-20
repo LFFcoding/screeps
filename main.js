@@ -28,7 +28,7 @@ module.exports.loop = function () {
     const MIN_DEFENDER = 1;
     const MIN_CARGO = 3;
     const MIN_HARVESTER = 2;
-    const MIN_UPGRADER = 5;
+    const MIN_UPGRADER = Memory.MIN_UPGRADER;
     const MIN_UPGRADER2 = 1;
     const MIN_BUILDER = 10;
     const MIN_EXPLORER1 = 1;
@@ -40,18 +40,32 @@ module.exports.loop = function () {
 
     console.log('############################################################################################')
 
-    var MAIN_STORAGE = MAIN_ROOM.find(FIND_MY_STRUCTURES, {
-        filter: (structure) => {
-            return (structure.structureType == STRUCTURE_STORAGE);
-        }
-    });
-    var MAIN_STORAGE_ENERGY = MAIN_STORAGE[0].store.energy;
+    var MAIN_STORAGES = [];
+    for (let room in Game.rooms) {
+        let storage = Game.rooms[room].find(FIND_MY_STRUCTURES, {
+            filter: (structure) => {
+                return (structure.structureType == STRUCTURE_STORAGE || structure.structureType == STRUCTURE_CONTAINER);
+            }
+        });
+        if (storage[0] !== undefined) {
+            MAIN_STORAGES.push(storage[0]);
+        };
+    };
+
+    var MAIN_STORAGE_ENERGY = 0;
+    for (let i = 0; i < MAIN_STORAGES.length; i++) {
+        console.log('Energia armazenada na room ', Game.rooms[MAIN_STORAGES[i].room.name], ': ', MAIN_STORAGES[i].store.energy);
+        MAIN_STORAGE_ENERGY = MAIN_STORAGE_ENERGY + MAIN_STORAGES[i].store.energy;
+    };
+
     console.log('Energia armazenada: ' + MAIN_STORAGE_ENERGY);
     if (MAIN_STORAGE_ENERGY > 980000) {
         Memory.EXTERNAL_UPGRADERS = 15;
+        Memory.MIN_UPGRADER = 10;
         Memory.minTroop = 0
     } else if (MAIN_STORAGE_ENERGY < 50000) {
         Memory.EXTERNAL_UPGRADERS = 5;
+        Memory.MIN_UPGRADER = 3;
         Memory.minTroop = 0
     };
 
