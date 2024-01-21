@@ -212,7 +212,7 @@ module.exports.loop = function () {
             console.log(roomWithCs[0]);
 
             let builderUnits = autoGenerate.pop('builder');
-            autoGenerate.generate(builderUnits, 'builder', MIN_BUILDER, MAIN_ROOM, 1250, 'Spawn1', [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'builder', takeRoom: MAIN_ROOM, putRoom: roomWithCs } });
+            autoGenerate.generate(builderUnits, 'builder', MIN_BUILDER, MAIN_ROOM, 1250, 'Spawn1', [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'builder', takeRoom: roomWithCs, putRoom: roomWithCs } });
         }
 
         let explorer1Units = autoGenerate.pop('explorer1');

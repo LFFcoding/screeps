@@ -58,8 +58,8 @@ var roleBuilder = {
                 } else if (STORAGES_FULL.length == 0) {
                     var droppedResources = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
                     if (droppedResources) {
-                        if (creep.pickup(target) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(target);
+                        if (creep.pickup(droppedResources) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(droppedResources);
                         }
                     } else {
                         let mina = creep.pos.findClosestByRange(FIND_SOURCES, {
