@@ -155,10 +155,10 @@ module.exports.loop = function () {
             autoGenerate.generateV2(upgraders, 'upgrader', MIN_UPGRADER, 1250, [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'upgrader', upgrading: false, takeRoom: MAIN_ROOM, putRoom: MAIN_ROOM } });
         }
 
-        var upgradersw7n1 = autoGenerate.popWithRooms('upgrader', MAIN_ROOM, Game.rooms['W7N1']);
+        var upgradersw7n1 = autoGenerate.popWithRooms('upgrader', ROOM_ALVO, Game.rooms['W7N1']);
 
         if (upgradersw7n1.length < Memory.EXTERNAL_UPGRADERS) {
-            autoGenerate.generateV2(upgradersw7n1, 'upgrader', Memory.EXTERNAL_UPGRADERS, 1250, [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'upgrader', upgrading: false, takeRoom: MAIN_ROOM, putRoom: Game.rooms['W7N1'] } });
+            autoGenerate.generateV2(upgradersw7n1, 'upgrader', Memory.EXTERNAL_UPGRADERS, 1250, [WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE, WORK, CARRY, MOVE, MOVE], { memory: { role: 'upgrader', upgrading: false, takeRoom: ROOM_ALVO, putRoom: Game.rooms['W7N1'] } });
         }
 
         var towerChargers1 = _.filter(Game.creeps, (creep) => (creep.memory.role == 'towerCharger'));
