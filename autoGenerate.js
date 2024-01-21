@@ -21,11 +21,12 @@ var autoGenerate = {
             for (let spawn in Game.spawns) {
                 if ((Game.spawns[spawn].room.name == takeRoom.name) && (Game.spawns[spawn].spawning === null)) {
                     if (units.length < minUnits && Game.spawns[spawn].room.energyAvailable >= minEnergy) {
+                        console.log(Game.spawns[spawn]);
                         var newName = (role + '_' + Game.time);
                         console.log('Spawning new ' + role + ': ' + newName);
                         Game.spawns[spawn].spawnCreep(bodyArray, newName, passMemory);
+                        break;
                     };
-                    break;
                 };
             };
         } else {
@@ -35,8 +36,8 @@ var autoGenerate = {
                         var newName = (role + '_' + Game.time);
                         console.log('Spawning new ' + role + ': ' + newName);
                         Game.spawns[spawn].spawnCreep(bodyArray, newName, passMemory);
+                        break;
                     };
-                    break;
                 };
             };
         };
@@ -48,8 +49,8 @@ var autoGenerate = {
                     var newName = (role + '_' + Game.time);
                     console.log('Spawning new ' + role + ': ' + newName);
                     Game.spawns[spawn].spawnCreep(bodyArray, newName, passMemory);
+                    break;
                 };
-                break;
             };
         };
     }
