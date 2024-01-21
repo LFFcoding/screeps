@@ -14,7 +14,7 @@ var roleExplorer1 = {
         });
 
         if (creep.memory.operacao == 'vazio') {
-            if (creep.room == Game.rooms['W8N2'] && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
+            if (creep.room.name == 'W7N1' && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
                 if (creep.store.getFreeCapacity() > 0) {
                     if (TOMBS_FULL.length > 0) {
                         console.log(creep.name + ': TOMBSTONE LOCALIZADA, INDO LIMPAR!')
@@ -30,11 +30,11 @@ var roleExplorer1 = {
                     creep.memory.operacao = 'carregado'
                     creep.memory.indoPara = undefined
                 }
-            } else if (creep.room != Game.rooms['W8N2'] || creep.pos.y <= 0) {
-                creep.moveTo(new RoomPosition(25, 25, 'W8N2'))
+            } else {
+                creep.moveTo(new RoomPosition(25, 25, 'W7N1'));
             }
         } else if (creep.memory.operacao == 'carregado') {
-            if (creep.room == Game.rooms['W8N3'] && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
+            if (creep.room.name == 'W7N1' && creep.pos.x > 0 && creep.pos.y > 0 && creep.pos.x < 49 && creep.pos.y < 49) {
                 var targets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
@@ -59,7 +59,7 @@ var roleExplorer1 = {
                     creep.memory.operacao = 'vazio'
                 }
             } else {
-                creep.moveTo(new RoomPosition(15, 21, 'W8N3'))
+                creep.moveTo(new RoomPosition(15, 21, 'W7N1'));
             }
         }
     }

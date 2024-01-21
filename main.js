@@ -31,7 +31,7 @@ module.exports.loop = function () {
     const MIN_UPGRADER = Memory.MIN_UPGRADER;
     const MIN_UPGRADER2 = 1;
     const MIN_BUILDER = 10;
-    const MIN_EXPLORER1 = 1;
+    const MIN_EXPLORER1 = 2;
     const MIN_CLAIMER = 0;
     const MIN_TOWERCHARGER = 1;
     let idleTroopUnits = autoGenerate.pop('idleTroop');
@@ -77,6 +77,10 @@ module.exports.loop = function () {
     var cargoUnitsRoomAlvo = autoGenerate.popWithRooms('cargo', ROOM_ALVO, ROOM_ALVO);
     autoGenerate.generate(cargoUnitsRoomAlvo, 'cargo', MIN_CARGO, ROOM_ALVO, 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', takeRoom: ROOM_ALVO, putRoom: ROOM_ALVO } });
 
+    //verifica quantos cargo existem na w7n1 e spawna se necessário
+    var cargoUnitsw7n1 = autoGenerate.popWithRooms('cargo', Game.rooms['W7N1'], Game.rooms['W7N1']);
+    autoGenerate.generate(cargoUnitsw7n1, 'cargo', MIN_CARGO, Game.rooms['W7N1'], 1000, 'Spawn1', [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], { memory: { role: 'cargo', operacao: 'vazio', takeRoom: Game.rooms['W7N1'], putRoom: Game.rooms['W7N1'] } });
+
     // start modulo das torres
     towerBrain.run(MAIN_ROOM);
     towerBrain.run(ROOM_ALVO);
@@ -105,6 +109,9 @@ module.exports.loop = function () {
 
         var harvesterUnitsRoomAlvo = autoGenerate.popWithRooms('harvester', ROOM_ALVO, ROOM_ALVO);
         autoGenerate.generate(harvesterUnitsRoomAlvo, 'harvester', MIN_HARVESTER, ROOM_ALVO, 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio', takeRoom: ROOM_ALVO, putRoom: ROOM_ALVO } });
+
+        var harvesterUnitsw7n1 = autoGenerate.popWithRooms('harvester', Game.rooms['W7N1'], Game.rooms['W7N1']);
+        autoGenerate.generate(harvesterUnitsw7n1, 'harvester', MIN_HARVESTER, Game.rooms['W7N1'], 1250, 'Spawn1', [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, MOVE], { memory: { role: 'harvester', operacao: 'vazio', takeRoom: Game.rooms['W7N1'], putRoom: Game.rooms['W7N1'] } });
     }
 
     //verifica quantos defenderUnits existem e spawna se necessário
